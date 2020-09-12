@@ -6,7 +6,7 @@ xy = 10, 10
 wh = 10, 10
 
 rect = RectangleFULL(matrix, xy, wh, "$", 0)
-rect1 = RectangleFULL(matrix, [30, 10], wh, "$", 0)
+rect1 = RectangleFULL(matrix, [30, 10], wh, "$", 0, True)
 
 while 1:
     matrix.fill()
