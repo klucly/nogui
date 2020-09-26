@@ -62,7 +62,7 @@ class Main:
             self.selection.update()
 
             clear_console()
-            print(self.matrix.show())
+            self.matrix.show()
 
 
 

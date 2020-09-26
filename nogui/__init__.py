@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from io import SEEK_SET
 import os
 import time
 from keyboard import is_pressed as _is_pressed
