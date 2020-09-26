@@ -215,7 +215,8 @@ class Polygon:
         self.angle = angle
 
 
-    def draw(self):
+    def draw(self, to_return = False):
+        self.__out = []
 
         coords = self.coords
         self.lines = []
@@ -226,24 +227,28 @@ class Polygon:
             xs.append(coord[0])
             ys.append(coord[1])
 
-        max_x = max(xs)
-        min_x = min(xs)
-        max_y = max(ys)
-        min_y = min(ys)
+        max_x = max(xs) if xs != [] else 0
+        min_x = min(xs) if xs != [] else 0
+        max_y = max(ys) if ys != [] else 0
+        min_y = min(ys) if ys != [] else 0
 
         self.max_x, self.max_y, self.min_x, self.min_y = max_x, max_y, min_x, min_y
+
+        self.__width_x__ = max_x-min_x
 
         centerx = (max_x+min_x)/2
         centery = (max_y+min_y)/2
 
         center = [centerx, centery]
+        self.center = center
 
         coords = self._rotate(coords, self.angle, center)
 
         if self.fixed_out:
             coords = self._fix_coords(coords)
 
-        coords.append(coords[0])
+        if coords != []:
+            coords.append(coords[0])
 
         coords_lenght = coords.__len__()
         
@@ -256,9 +261,23 @@ class Polygon:
 
                 for pixel in line:
                     if pixel[1] >= 0 and pixel[0] >= 0:
+
                         try:
-                            self.matrix.matrix[pixel[1]][pixel[0]] = self.symbol
+                            if not to_return:
+                                self.matrix.matrix[pixel[1]][pixel[0]] = self.symbol
+
+                            else:
+                                self.__out.append(pixel)
                         except IndexError: pass
+
+            if to_return:
+                out = []
+                for ii in range(coords.__len__()-2):
+                    to_add1 = [self.coords[ii][0], self.coords[ii][1]]
+                    to_add2 = [self.coords[ii+1][0], self.coords[ii+1][1]]
+                    out.append(self.get_line([to_add1, to_add2]))
+                return out
+
 
     def get_line(self, coords) -> list:
 
@@ -292,8 +311,8 @@ class Polygon:
         for coord in coords:
             y_s.append(coord[1])
 
-        max_y = max(y_s)
-        min_y = min(y_s)
+        max_y = max(y_s) if y_s != [] else 0
+        min_y = min(y_s) if y_s != [] else 0
 
         middle_y = (max_y + min_y) /2
 
@@ -317,74 +336,87 @@ class Polygon:
             new_points.append([x_new + cx, y_new + cy])
         return new_points
 
-    def fill(self, symbol):
-        "Function works awful, but can be used"
+    def fill(self, symbol: str, mode = "raycasting") -> None:
+        '''Function works awful, but can be used
+        theres 2 modes now: "raycasting" and "depthcopy"
+        they both works bad, but differently bad'''
 
-        if hasattr(self, "lines"):
+        if mode == "raycasting":
+            out_coords = []
+
+            if hasattr(self, "lines"):
+                
+                class Searcher:
+
+                    def __init__(self, coords: list) -> None:
+                        self.coords = coords
+                        self.inside = False
+                        self.passed_lines = []
+
+
+                searchers: list = []
+
+
+                for i in range(round(self.max_y-self.min_y)):
+                    searchers.append(Searcher((round(self.min_x), round(self.min_y+i))))
+
+
+                for x in range(round(self.max_x-self.min_x)):
+
+                    coords1 = []
+                    for coord in self.coords:
+                        coords1.append(tuple(coord))
+
+
+                    for searcher in searchers:
+
+                        for line in self.lines:
+                            if searcher.coords in line and searcher.coords not in coords1:
+
+                                if line not in searcher.passed_lines:
+
+                                    searcher.inside = not searcher.inside
+                                    searcher.passed_lines.append(line)
+                                    
+
+                        searcher.coords = searcher.coords[0]+1, searcher.coords[1]
+
+                        if searcher.inside:
+                            self.matrix.matrix[searcher.coords[1]][searcher.coords[0]] = symbol
+
+        if mode == "depthcopy":
+            out_coords1 = []
+
+            center = [round((self.min_x+self.max_x)/2), round((self.min_y+self.max_y)/2)]
+
+            for i in range(round((((self.max_x-self.min_x)+(self.max_y-self.min_y))/2)/2)):
+                coords = []
+
+                rotated = self._rotate(self.coords, self.angle, self.center)
+                for coord in rotated:
+                        
+                    # for j in range(round((self.max_x-self.min_x)/5)):
+
+                    if coord[0] >= center[0]:
+                        coords.append([coord[0]-i])
+                    
+                    elif coord[0] < center[0]:
+                        coords.append([coord[0]+i])
+                    
+                    if coord[1] >= center[1]:
+                        coords[-1].append(coord[1]-i)
+                    
+                    elif coord[1] < center[1]:
+                        coords[-1].append(coord[1]+i)
             
-            class Searcher:
+                pol = Polygon(self.matrix, coords, symbol, fixed_out = self.fixed_out)
 
-                def __init__(self, coords: list) -> None:
-                    self.coords = coords
-                    self.inside = False
-                    self.passed_lines = []
+                pol.draw()
+                    
+            print(out_coords1)
 
-
-            searchers: list = []
-
-
-            for i in range(round(self.max_y-self.min_y)):
-                searchers.append(Searcher((round(self.min_x), round(self.min_y+i))))
-
-
-            for x in range(round(self.max_x-self.min_x)):
-
-                coords1 = []
-                for coord in self.coords:
-                    coords1.append(tuple(coord))
-
-
-                for searcher in searchers:
-
-                    for line in self.lines:
-                        if searcher.coords in line and searcher.coords not in coords1:
-
-                            if line not in searcher.passed_lines:
-
-                                searcher.inside = not searcher.inside
-                                searcher.passed_lines.append(line)
-                                
-
-                    searcher.coords = searcher.coords[0]+1, searcher.coords[1]
-
-                    if searcher.inside:
-                        self.matrix.matrix[searcher.coords[1]][searcher.coords[0]] = symbol
-
-
-
-    # def fill(self):
-    #     center = [round((self.min_x+self.max_x)/2), round((self.min_y+self.max_y)/2)]
-
-    #     for i in range(10):
-    #         coords = []
-
-
-    #         for coord in self.coords:
-                
-    #             if coord[0] >= center[0]:
-    #                 coords.append([coord[0]-1])
-                
-    #             elif coord[0] < center[0]:
-    #                 coords.append([coord[0]+1])
-                
-    #             if coord[1] >= center[1]:
-    #                 coords[-1].append(coord[1]-1)
-                
-    #             elif coord[1] < center[1]:
-    #                 coords[-1].append(coord[1]+1)
-            
-    #         for coords1 in self.get_line(coords):
-    #             self.matrix.matrix[coords1[1]][coords1[0]] = "%"
+                # for coords1 in self.get_line(coords):
+                #     self.matrix.matrix[coords1[1]][coords1[0]] = "%"
 
 
 
