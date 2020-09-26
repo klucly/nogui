@@ -21,8 +21,16 @@ class Main:
         self.matrix = matrix
         self.player = player
 
+        self.repeat()
+
     def repeat(self) -> None:
 
         self.matrix.fill()
 
         self.player.object.draw()
+
+        print(self.matrix.show())
+
+
+if __name__ == "__main__":
+    Main()

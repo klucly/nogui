@@ -3,7 +3,7 @@ from math import sin
 
 doFill = True
 
-def out(matrix: Matrix, tick: int) -> None:
+def out(matrix: Matrix) -> None:
     
     clear_console()
     print(matrix.show())
@@ -36,7 +36,15 @@ while 1:
         Acoords = sin(tick/200)*(w/2)+x
         Bcoords = sin(-tick/200)*(w/2)+x+w
         numberOfFillSymbol = (Bcoords-Acoords)/2.5+2
-        obj.fill(fill[-int(numberOfFillSymbol)])
+        obj.draw()
+        # obj.fill(fill[-int(numberOfFillSymbol)])
+        # obj.fill("W", "raycasting")
+        # obj.fill("W", "depthcopy")
+        print(obj.draw())
+        obj.fill("W", "multi")
+
     obj.draw()
-    out(matrix, tick)
+
+    out(matrix)
     tick += 1
+    # input()
