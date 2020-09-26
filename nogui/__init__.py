@@ -9,10 +9,17 @@ import math
 # STATIC = Body.STATIC
 # DYNAMIC = Body.DYNAMIC
 
+use_local_console = True
+
 class Matrix:
 
     def __init__(self, size = [10, 5], bg = " ") -> None:
         '''The main class, uses like a screen, called matrix'''
+
+        if use_local_console:
+            import nogui.console as console
+            self.console = console.Console(size)
+
 
         self.matrix = []
         self.bg = bg
@@ -33,8 +40,9 @@ class Matrix:
         for line in buffer_matrix:
 
             out += "".join(line)+"\n"
-
-        return out
+        
+        if use_local_console: self.console.update(out)
+        else: print(out)
 
     def fill(self, bg = None) -> None:
         '''Fill a matrix in with bg'''
@@ -46,17 +54,17 @@ class Matrix:
         self.matrix = [[self.bg for i in range(self.size[0])] for j in range(self.size[1])] 
 
         
-class Space:
+# class Space:
 
-    def __init__(self, gravity = [0, 100]) -> None:
+#     def __init__(self, gravity = [0, 100]) -> None:
 
-        import pymunk
+#         import pymunk
 
-        self.space = pymunk.Space()
-        self.space.gravity = gravity
+#         self.space = pymunk.Space()
+#         self.space.gravity = gravity
 
-    def update(self, step: float) -> None:
-        self.space.step(step)
+#     def update(self, step: float) -> None:
+#         self.space.step(step)
 
 
 clear_console = lambda: os.system("cls" if os.name == "nt" else "clear")

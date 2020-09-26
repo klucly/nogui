@@ -123,7 +123,7 @@ class Main:
 
 
             clear_console()
-            print(self.matrix.show())
+            self.matrix.show()
 
 
             self.tick += 1
