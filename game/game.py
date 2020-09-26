@@ -99,7 +99,7 @@ class Main:
                         if hasattr(obj, "object"):
                             if collision(self.sq, obj.object) and not(obj.is_pressed):
 
-                                obj.object.symbol = "O"
+                                obj.object.symbol = "-"
                                 self.combo_score += 1
                                 self.score += 100*self.difficulty*sqrt(self.combo_score)
                                 obj.is_pressed = True

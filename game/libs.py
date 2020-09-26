@@ -45,6 +45,7 @@ class Score:
 
     def update(self, score):
         self.object.draw()
+        score = round(score)
 
         score_lenght = str(score).__len__()
         line = "|||"+" "*((34-score_lenght)//2)+str(score)+" "*((34-score_lenght)//2)+"|||"
