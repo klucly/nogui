@@ -253,6 +253,8 @@ class Polygon:
         if coords != []:
             coords.append(coords[0])
 
+        self.coords = coords
+
         coords_lenght = coords.__len__()
         
         for i in range(coords_lenght):
