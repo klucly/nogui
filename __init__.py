@@ -149,7 +149,24 @@ class RectangleXYWH(__Rectangle__):
         self.symbol = symbol
 
 
-def press(key): return _is_pressed(key)
+def press(key: str):
+    if use_local_console:
+        import pygame
+
+        if len(key) == 1: key = key.lower()
+        else: key = key.upper()
+
+        key_ = pygame.constants.__dict__["K_"+key]
+
+        events = pygame.key.get_pressed()
+
+        if events[key_]:
+            return True
+
+        return False
+
+    else:
+        return _is_pressed(key)
 
 
 def collision(obj1, obj2):
