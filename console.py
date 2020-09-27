@@ -2,6 +2,7 @@ import pygame
 import sys
 from pygame.display import set_caption
 import pygame.freetype
+import os
 
 class Console:
 
@@ -10,9 +11,16 @@ class Console:
         pygame.init()
         pygame.font.init()
 
-        self.myfont = pygame.font.SysFont('notomono', 16)
+        if os.name == "nt":
 
-        size = round(size[0]*9.8), size[1] * 19
+            self.myfont = pygame.font.SysFont(pygame.font.get_fonts()[8], 16)
+
+            size = round(size[0]*9), size[1] * 19
+
+        else:
+            self.myfont = pygame.font.SysFont('notomono', 16)
+
+            size = round(size[0]*9.8), size[1] * 19
 
         self.FPS = fps
         self.size = size
@@ -41,19 +49,6 @@ class Console:
             text_split[text_split.index(line)] = None
 
 
-
-
-
         pygame.display.update()
 
         self.clock.tick(self.FPS)
-
-# w = ""
-# for i in range(10):
-#     w += (f"{i//2}"*10+"\n")
-
-# c = Console([10, 10])
-
-# while 1:
-    
-#     c.update(w)

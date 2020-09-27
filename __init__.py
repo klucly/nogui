@@ -1,14 +1,23 @@
 # -*- coding: utf-8 -*-
 
+install_packages = True
+use_local_console = True
+
+
+
 import os
 import time
-from keyboard import is_pressed as _is_pressed
 import math
-# from pymunk import Body
-# STATIC = Body.STATIC
-# DYNAMIC = Body.DYNAMIC
 
-use_local_console = True
+if install_packages:
+    try: from keyboard import is_pressed as _is_pressed
+    except ImportError: os.system("pip install keyboard") if os.name == "nt" else os.system("sudo pip3 install keyboard")
+
+    try: import pygame
+    except ImportError: os.system("pip install pygame") if os.name == "nt" else os.system("sudo pip3 install pygame")
+
+from keyboard import is_pressed as _is_pressed
+
 
 class Matrix:
 
@@ -51,19 +60,6 @@ class Matrix:
 
         #This makes 2d array
         self.matrix = [[self.bg for i in range(self.size[0])] for j in range(self.size[1])] 
-
-        
-# class Space:
-
-#     def __init__(self, gravity = [0, 100]) -> None:
-
-#         import pymunk
-
-#         self.space = pymunk.Space()
-#         self.space.gravity = gravity
-
-#     def update(self, step: float) -> None:
-#         self.space.step(step)
 
 
 clear_console = lambda: os.system("cls" if os.name == "nt" else "clear")
@@ -541,8 +537,6 @@ class Polygon:
 
     #         go(self, coords, lines, i)
             
-            
-
 
 class RectangleFULL:
 
@@ -558,55 +552,15 @@ class RectangleFULL:
         x, y, w, h = xy[0], xy[1], wh[0], wh[1]
         self.figure = Polygon(self.matrix, [[x, y], [x+w, y], [x+w, y+h], [x, y+h]], self.symbol, angle, self.fixed_out)
 
-    # def physics_init(self, space: Space, mass = 1, obj_type = DYNAMIC) -> None:
-        
-    #     import pymunk
 
-    #     self._space = space
-    #     self._mass = mass
-    #     self._obj_type = obj_type
+    def draw(self) -> None:
 
-    #     moment = pymunk.moment_for_box(mass, self.wh)
-
-    #     self._body = pymunk.Body(mass, moment, obj_type)
-    #     self._body.position = self.xy
-    #     self._body.angle = math.radians(self.angle)
-
-    #     self._shape = pymunk.Poly.create_box(self._body, self.wh, 0)
-
-    #     self._space.space.add(self._body, self._shape)
-
-
-    def draw(self, idk_what_is_it_but_u_need_it: int = 1) -> None:
-        if hasattr(self, "_body"):
-            xy = self._body.position
-            angle = math.degrees(self._body.angle)
-            self.angle = angle
-
-        else:
-            angle = self.angle
-            xy = self.xy
-
+        xy = self.xy
         wh = self.wh
 
         x, y, w, h = xy[0], xy[1], wh[0], wh[1]
-
-        if self._coords != []:
-            y_s = []
-
-            for coord in self._coords:
-                y_s.append(coord[1])
-
-            y_min = min(y_s)
-            y_max = max(y_s)
-
-            y -= y_max - y_min
-
-        coords = [[x, y], [x, y+h], [x+w, y+h], [x+w, y]]
-
-        # center = x+w/2, y+h/2
-
-        # coords = self._rotate(coords, angle, center)
+        
+        coords = [[x, y], [x+w, y], [x+w, y+h], [x, y+h]]
 
         self.figure.angle = self.angle
         self.figure.fixed_out = self.fixed_out
