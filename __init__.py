@@ -588,3 +588,36 @@ class RectangleFULL:
         self._coords = self.figure.coords
 
         self.figure.draw()
+
+class Circle:
+
+    def __init__(self, matrix: Matrix, coords: list, radius: int, symbol: str, resolution = 50, fixed_out = False) -> None:
+
+        self.matrix = matrix
+        self.coords = coords
+        self.radius = radius
+        self.symbol = symbol
+        self.resolusion = resolution
+        self.fixed_out = fixed_out
+
+    def draw(self):
+
+        # x^2+y^2=r^2
+        r = self.radius
+        res = self.resolusion
+        for boool in range(2):
+            for step in range(-r*res, r*res, 1):
+
+                x = step/res
+
+                try:
+                    y = math.sqrt(r**2-x**2)*(-1)**boool/(self.fixed_out+1)
+                    
+                    self.matrix.matrix[round(y+self.coords[1])][round(x+self.coords[0])] = self.symbol
+
+                except: pass
+
+
+        # x = cos(t); y = sin(t)
+
+        # for i in range()
