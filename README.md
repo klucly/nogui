@@ -1,5 +1,5 @@
 # Title
-Text
+Text **bold text**
 ## Mini title 1
 * One
 * Two
