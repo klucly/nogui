@@ -11,7 +11,7 @@ Well, you have to download this. There is no other ways, haha
 
 # Configuring
 
-`In the **path**/nogui/__init__.py in the up of file you will see that:`
+In the **path**/`nogui`/`__init__.py` in the up of file you will see that:
 
 ```python
 
