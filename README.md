@@ -208,7 +208,7 @@ Returning coordinates of all the points of a line between 2 points from `coords`
 Fill a polygon (Work in progress but can be used)
 
 * **mode** is mode of filling
-  Here's 2 modes now:
-  * "raycasting"
-  - "depthcopy"
-  They both works awful, but differently awful
+  * Here's 2 modes now:
+    * "raycasting"
+    - "depthcopy"
+  - They both works awful, but differently awful
