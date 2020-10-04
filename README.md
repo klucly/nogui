@@ -78,6 +78,11 @@ Links:
   * [RectangleFULL](#class-RectangleFULL)
   - [Circle](#class-Circle)
 
+* functions
+  * [clear_console](#function-clear_console)
+  * [press](#function-press)
+  - [collision](#function-collision)
+
 
 ## class `Matrix`
 The main class. Its a window for engine
