@@ -156,7 +156,7 @@ Reading the press of a key
 ## function `collision(obj1, obj2):`
 Returning True if `obj1` colliding with `obj2`
 
-### Attension! This function read colliding between only objects of classes [`RectangleXYWH`](#class-`RectangleXYWH`) and [`RectangleXY2`](#class-`RectangleXY2`)
+### Attension! This function read colliding between only objects of classes [`RectangleXYWH`](#class-rectanglexywh) and [`RectangleXY2`](#class-rectanglexy2)
 
 
 ## class `Sprite`
