@@ -301,7 +301,7 @@ class Polygon:
                 return out
 
 
-    def get_line(coords) -> list:
+    def get_line(self, coords) -> list:
 
         coords0 = coords[0]
         coords1 = coords[1]
@@ -393,12 +393,13 @@ class Polygon:
                     for searcher in searchers:
 
                         for line in self.lines:
-                            if searcher.coords in line and searcher.coords not in coords1:
 
-                                if line not in searcher.passed_lines:
+                                if searcher.coords in line and searcher.coords not in coords1:
 
-                                    searcher.inside = not searcher.inside
-                                    searcher.passed_lines.append(line)
+                                    if line not in searcher.passed_lines:
+
+                                        searcher.inside = not searcher.inside
+                                        searcher.passed_lines.append(line)
                                     
 
                         searcher.coords = searcher.coords[0]+1, searcher.coords[1]

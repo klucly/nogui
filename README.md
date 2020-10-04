@@ -207,8 +207,11 @@ Returning coordinates of all the points of a line between 2 points from `coords`
 ### method `fill(self, symbol: str, mode = "raycasting") -> None:`
 Fill a polygon (Work in progress but can be used)
 
+* **symbol** is the symbol, from which the polygon will be drawn
+
 * **mode** is mode of filling
   * Here's 2 modes now:
     * "raycasting"
     - "depthcopy"
   - They both works awful, but differently awful
+

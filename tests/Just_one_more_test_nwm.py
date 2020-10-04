@@ -20,6 +20,7 @@ while 1:
     a1.draw()
     c.draw()
     a.draw()
+    a.figure.fill("u")
     c1.draw()
 
     clear_console()
