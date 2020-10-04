@@ -184,7 +184,7 @@ Its the coordinates of sprite `(Not recommended to touch)`
 
 
 ## class `Polygon`
-Polygon.
+Polygon. `(WIP)`
 
 ### method `__init__(self, matrix: Matrix, coords: list, symbol: str, angle = 0, fixed_out = False) -> None:`
 
@@ -215,3 +215,51 @@ Fill a polygon (Work in progress but can be used)
     - "depthcopy"
   - They both works awful, but differently awful
 
+
+### variable `matrix`
+Its the matrix of your program
+
+### variable `coords`
+Its the coordinates of the points to draw polygon
+
+### variable `symbol`
+Its the symbol, from which the polygon will be drawn
+
+### variable `angle`
+Its the angle of a polygon `(Yes, you can rotate it)`
+
+### variable `fixed_out`
+It makes your polygon looks as it must
+
+## class `RectangleFULL`
+Rectangle, that you can rotate `(WIP)`
+
+### method `__init__(self, matrix: Matrix, xy: list, wh: list, symbol: str, angle: int, fixed_out = False) -> None:`
+
+* **matrix** is the matrix of program
+* **xy** is the coordinates of rectangle
+* **wh** is width and height of rectangle
+* **symbol** is the symbol, from which the rectangle will be drawn
+* **angle** is angle of a rectangle `(Yes, you can rotate it)`
+* **fixed_out** making your rectangle looks as it must
+
+### method `draw(self) -> None:`
+Draw the rectangle
+
+### variable `matrix`
+Its the matrix of your program
+
+### variable `xy`
+Its the coordinates of the rectangle
+
+### variable `wh`
+Its the width and height of the rectangle
+
+### variable `symbol`
+Its the symbol, from which the rectangle will be drawn
+
+### variable `angle`
+Its the angle of a rectangle `(Yes, you can rotate it)`
+
+### variable `fixed_out`
+It makes your rectangle looks as it must
