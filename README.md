@@ -68,12 +68,12 @@ while 1:
 
 # About classes and other
 
-## Matrix
+## `Matrix`
 
-#### `__init__(size = [10, 5], bg = " ") -> None:`
+### `__init__(size = [10, 5], bg = " ") -> None:`
 Making the object of class window called `Matrix`
 
 * **Size** is the size of window in symbols first is X, second is Y
 * **bg** is the symbol of background
 
-#### `show(self) -> str:`
+### `show(self) -> str:`
