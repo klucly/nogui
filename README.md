@@ -37,34 +37,86 @@ import nogui
 
 Then we need an object of class `Matrix`, it will be our window by the symbols and we will call it `matrix`:
 ```python
-from nogui import Matrix
+from nogui import Matrix # importing the engine
 
-matrix = Matrix()
+matrix = Matrix() # making the matrix
 ```
 
 If we will start this, nothing will happen, because we will do not show 
-our window, just create it, to show it you can write some code:
+our [window](#class-matrix), just create it, to show it you can write some code:
 
 ```python
-from nogui import Matrix
+from nogui import Matrix # importing the engine
 
-matrix = Matrix()
-matrix.show()
+matrix = Matrix() # making the matrix
+matrix.show() # showing the matrix
 ```
 
 If you have ever used [`pygame`](https://github.com/pygame/pygame), it will be easy for you
 
 So, our console opened and closed almost at the same time if you [use local console](#Configuring). 
-We just need to put `.show()` to the loop and we will get that:
+We just need to put `matrix.show()` to the loop and we will get that:
 
 ```python
-from nogui import Matrix
+from nogui import Matrix # importing the engine
 
-matrix = Matrix()
+matrix = Matrix() # making the matrix
 
 while 1:
-    matrix.show()
+    matrix.show() # showing the matrix in a loop and updating it
 ```
+
+## Objects
+
+Now the window do not want to close, but we've nothing interesting on the screen anyway
+
+So, let's make a regular [rectangle](#class-rectanglexywh). To do this firstly we need to create a rectangle, secondly to draw it
+
+```python
+from nogui import Matrix, RectangleXYWH # importing the engine and rectangle
+
+matrix = Matrix([40, 30], ".") # making the matrix
+rect = RectangleXYWH(matrix, [20, 10, 10, 10], "#") # making a rectangle
+
+while 1:
+    matrix.show() # showing the matrix
+    matrix.fill() # filling the matrix
+    rect.draw() # drawing the rectangle in it
+```
+
+Now, let's make some moving with that:
+```python
+from nogui import Matrix, RectangleXYWH # importing the engine and rectangle
+
+matrix = Matrix([40, 30], ".") # making the matrix
+rect = RectangleXYWH(matrix, [20, 10, 10, 10], "#") # making a rectangle
+
+tick = 0 # just a variable, that will be increasing all the time
+while 1:
+    tick += 1 # increasing tick variable
+    rect.xywh[0] = tick/100 # moving a rectangle with x axe
+    matrix.show() # showing the matrix
+    matrix.fill() # filling the matrix
+    rect.draw() # drawing the rectangle in it
+```
+
+We can do the same thing with width:
+```python
+from nogui import Matrix, RectangleXYWH # importing the engine and rectangle
+from math import sin # importing sinus
+
+matrix = Matrix([40, 30], ".") # making the matrix
+rect = RectangleXYWH(matrix, [20, 10, 10, 10], "#") # making a rectangle
+
+tick = 0 # just a variable, that will be increasing all the time
+while 1:
+    tick += 1 # increasing tick variable
+    rect.xywh[2] = (sin(tick/100)+1)*5 # moving a rectangle with x axe
+    matrix.show() # showing the matrix
+    matrix.fill() # filling the matrix
+    rect.draw() # drawing the rectangle in it
+```
+
 
 # API
 
