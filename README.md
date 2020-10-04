@@ -76,7 +76,7 @@ Links:
   * [Sprite]()
   * [Polygon]()
   * [RectangleFULL]()
-  * [Circle]()
+  - [Circle]()
 
 
 ## class `Matrix`
