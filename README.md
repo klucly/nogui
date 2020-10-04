@@ -70,10 +70,19 @@ while 1:
 
 ## `Matrix`
 
-### `__init__(size = [10, 5], bg = " ") -> None:`
+### method `__init__(size = [10, 5], bg = " ") -> None:`
 Making the object of class window called `Matrix`
 
 * **Size** is the size of window in symbols first is X, second is Y
 * **bg** is the symbol of background
 
-### `show(self) -> str:`
+### method `show(self) -> str:`
+Update's interface
+
+### method `fill(self, bg = None) -> None:`
+Fill all the window with the symbol, 
+
+* **bg** is the symbol to fill by. If `bg` is `None`, it just fill interface with a standart symbol in `Matrix.bg`
+
+### variable `bg`
+Background of the window
