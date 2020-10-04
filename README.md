@@ -4,14 +4,14 @@ Thats the game engine where you can make programs
 without gui `(Like in console)` very easy
 
 
-# Installation
+## Installation
 
 Well, you have to download this. There is no other ways, haha
 
 
-# Configuring
+## Configuring
 
-In the `/nogui/__init__.py` in the up of file you will see this lines:
+In the `/nogui/__init__.py` in the top of file you will see those lines:
 
 ```python
 
@@ -20,9 +20,10 @@ use_local_console = True
 
 ```
 
-`install_packeges` is to install packages, what the engine needs
+`install_packages` is to install packages, what the engine needs
+
 `use_local_console` is to use special console for this engine
-* If `True` you need [`pygame`,](https://github.com/pygame/pygame) speed of programs will be increased by the few times
+* If `True` you need [`pygame`](https://github.com/pygame/pygame), speed of programs will be increased by the few times
 * If `False` you need [`keyboard`](https://github.com/boppreh/keyboard) and if you have linux you have to run files with a root `(not recommended to use)`
 
 # Using
@@ -34,18 +35,33 @@ For the start we need to import an engine:
 import nogui
 ```
 
-Then we need an object of class Matrix, it will be our window by the symbols:
+Then we need an object of class `Matrix`, it will be our window by the symbols and we will call it `matrix`:
 ```python
 from nogui import Matrix
 
 matrix = Matrix()
 ```
 
-If we will start this, nothing will happen, because will do not show our window, to show it you can write some code:
+If we will start this, nothing will happen, because we will do not show 
+our window, just create it, to show it you can write some code:
 
 ```python
 from nogui import Matrix
 
 matrix = Matrix()
 matrix.show()
+```
+
+If you have ever used [`pygame`](https://github.com/pygame/pygame), it will be easy for you
+
+So, our console opened and closed almost at the same time if you [use local console](#Configuring). 
+We just need to put `.show()` to the loop and we will get that:
+
+```python
+from nogui import Matrix
+
+matrix = Matrix()
+
+while 1:
+    matrix.show()
 ```
