@@ -1,10 +1,10 @@
 # Title
 Text **bold text**
 ## Mini title 1
-* [One](## Mini title 3)
+* [One](##Mini-title-3)
 * Two
- * Two.one
- * Two.two
+  * Two.one
+  - Two.two
 * Three
 
 ## Mini title 2
