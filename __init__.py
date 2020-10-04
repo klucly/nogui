@@ -590,6 +590,7 @@ class RectangleFULL:
 
         self.figure.draw()
 
+
 class Circle:
 
     def __init__(self, matrix: Matrix, coords: list, radius: int, symbol: str, resolution = 50, fixed_out = False) -> None:

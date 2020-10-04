@@ -68,6 +68,16 @@ while 1:
 
 # API
 
+Links:
+* <h5>classes</h5>
+  * [Matrix](#class-matrix)
+  * [RectangleXY2]()
+  * [RectangleXYWH]()
+  * [Sprite]()
+  * [Polygon]()
+  * [RectangleFULL]()
+  * [Circle]()
+
 
 ## class `Matrix`
 The main class. Its a window for engine
@@ -263,3 +273,16 @@ Its the angle of a rectangle `(Yes, you can rotate it)`
 
 ### variable `fixed_out`
 It makes your rectangle looks as it must
+
+## class `Circle`
+Circle.
+
+### method `__init__(self, matrix: Matrix, coords: list, radius: int, symbol: str, resolution = 50, fixed_out = False) -> None:`
+
+* **matrix** is the main matrix of program
+* **coords** is the coordinates of a circle
+* **radius** is the radius of the circle
+* **symbol** is the symbol, from which the circle will be drawn
+* **resolution** is the resolution of the circle `(If circle will be looks strangely just increase this variable)`
+* **fixed_out** is the real looks of the circle
+
