@@ -13,3 +13,11 @@ Text `Micro text` end
     more code
 
 [Link](http://patorjk.com/software/taag/#p=about&h=3&v=0&c=echo&w=O&f=Caligraphy&t=Hello%3F)
+
+## Mini title 3
+
+Python code:
+```python
+import os
+if os.name == "nt": print("yes")
+```
