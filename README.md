@@ -1,7 +1,7 @@
 # Title
 Text **bold text**
 ## Mini title 1
-* [One](##Mini-title-3)
+* [One](##Image)
 * Two
   * Two.one
   - Two.two
