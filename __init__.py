@@ -16,7 +16,6 @@ if install_packages:
     try: import pygame
     except ImportError: os.system("pip install pygame") if os.name == "nt" else os.system("sudo pip3 install pygame")
 
-from keyboard import is_pressed as _is_pressed
 
 
 class Matrix:
@@ -166,6 +165,7 @@ def press(key: str):
         return False
 
     else:
+        from keyboard import is_pressed as _is_pressed
         return _is_pressed(key)
 
 
