@@ -71,12 +71,12 @@ while 1:
 Links:
 * classes
   * [Matrix](#class-matrix)
-  * [RectangleXY2]()
-  * [RectangleXYWH]()
-  * [Sprite]()
-  * [Polygon]()
-  * [RectangleFULL]()
-  - [Circle]()
+  * [RectangleXY2](#class-RectangleXY2)
+  * [RectangleXYWH](#class-RectangleXYWH)
+  * [Sprite](#class-Sprite)
+  * [Polygon](#class-Polygon)
+  * [RectangleFULL](#class-RectangleFULL)
+  - [Circle](#class-Circle)
 
 
 ## class `Matrix`
