@@ -21,3 +21,6 @@ Python code:
 import os
 if os.name == "nt": print("yes")
 ```
+## Image:
+
+<img cls="https://301662-923523-1-raikfcquaxqncofqfm.stackpathdns.com/wp-content/uploads/charts-cached/personality_types_your_details_population_pie_INFJ.png"\>
