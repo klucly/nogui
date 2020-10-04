@@ -69,7 +69,7 @@ while 1:
 # API
 
 Links:
-* <h5>classes</h5>
+* classes
   * [Matrix](#class-matrix)
   * [RectangleXY2]()
   * [RectangleXYWH]()
