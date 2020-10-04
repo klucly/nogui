@@ -301,7 +301,7 @@ class Polygon:
                 return out
 
 
-    def get_line(self, coords) -> list:
+    def get_line(coords) -> list:
 
         coords0 = coords[0]
         coords1 = coords[1]

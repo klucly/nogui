@@ -182,3 +182,33 @@ Its the list of lines of sprite
 ### variable `coords`
 Its the coordinates of sprite `(Not recommended to touch)`
 
+
+## class `Polygon`
+Polygon.
+
+### method `__init__(self, matrix: Matrix, coords: list, symbol: str, angle = 0, fixed_out = False) -> None:`
+
+* **matrix** is the matrix of your program
+* **coords** is coordinates of the points to draw polygon
+* **symbol** is the symbol, from which the polygon will be drawn
+* **angle** is angle of a polygon `(Yes, you can rotate it)`
+* **fixed_out** making your polygon looks as it must
+
+### method `draw(self, to_return = False):`
+Draws a polygon on a window
+
+* **to_return**, if `True`, it will return the coordinates, not show itself
+
+### method `get_line(coords) -> list:`
+Returning coordinates of all the points of a line between 2 points from `coords`
+
+* **coords** is coordinates of 2 points of a line
+
+### method `fill(self, symbol: str, mode = "raycasting") -> None:`
+Fill a polygon (Work in progress but can be used)
+
+* **mode** is mode of filling
+  Here's 2 modes now:
+  * "raycasting"
+  - "depthcopy"
+  They both works awful, but differently awful
