@@ -9,6 +9,8 @@ import os
 import time
 import math
 
+from nogui import console
+
 if install_packages:
     try: from keyboard import is_pressed as _is_pressed
     except ImportError: os.system("pip install keyboard") if os.name == "nt" else os.system("sudo pip3 install keyboard")
@@ -60,6 +62,9 @@ class Matrix:
         #This makes 2d array
         self.matrix = [[self.bg for i in range(self.size[0])] for j in range(self.size[1])] 
 
+    def mouse_down(self):return console.Console.mouse_down()
+    def mouse_up(self): return console.Console.mouse_up()
+
 
 clear_console = lambda: os.system("cls" if os.name == "nt" else "clear")
 
@@ -94,12 +99,31 @@ class __Object2D__:
 
             y_min = min(y1, y2)
             y_max = max(y1, y2)
+            self.x_max, self.x_min, self.y_max, self.y_min = x_max, x_min, y_max, y_min
             
             self.__figure_init__ = True
 
         if hasattr(self , "__figure_init__"):
             return x_min, x_max, y_min, y_max
         else: return None
+
+    def mouse_up(self):
+        coords = console.Console.mouse_up()
+        if coords != None:
+            if coords[0] >= self.x_min and coords[0] <= self.x_max:
+                if coords[1] >= self.y_min and coords[1] <= self.y_max:
+                    return True
+        return False
+
+    def mouse_down(self):
+        coords = console.Console.mouse_down()
+        if coords != None:
+            if coords[0] >= self.x_min and coords[0] <= self.x_max:
+                if coords[1] >= self.y_min and coords[1] <= self.y_max:
+                    return True
+        return False
+
+
 
 
 class __Rectangle__(__Object2D__):
@@ -185,9 +209,15 @@ def collision(obj1, obj2):
 
 class Sprite(__Object2D__):
 
-    def __init__(self, matrix: Matrix, xy, sprite) -> None:
+    def __init__(self, matrix: Matrix, coords, sprite) -> None:
+        self.sprite = sprite
+        self.xy = coords
+        self.xywh = [0, 0, 0, 0]
+        self.matrix = matrix
 
-        sprite_lines_split = sprite.split("\n")
+    def draw(self) -> None:
+
+        sprite_lines_split = self.sprite.split("\n")
         buffer = []
 
         for line in sprite_lines_split:
@@ -197,12 +227,10 @@ class Sprite(__Object2D__):
 
         height = sprite_lines_split.__len__()
 
-        self.xywh = [xy[0], xy[1], width, height]
-        self.matrix = matrix
+        self.xywh = [self.xy[0], self.xy[1], width, height]
+        self.matrix = self.matrix
         self.line_split = sprite_lines_split
         self.coords = self.xywh[0], self.xywh[1], self.xywh[0]+self.xywh[2], self.xywh[1]+self.xywh[3]
-
-    def draw(self) -> None:
 
         buffer_matrix = self.matrix.matrix
         x_min, x_max, y_min, y_max = self.__get_global_coords__()

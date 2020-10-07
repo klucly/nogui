@@ -3,13 +3,14 @@ from nogui import *
 
 w = Matrix([80, 40], " ", 60, True)
 
-c = Circle(w, [40, 20], 1, "O", True)
+r = RectangleXYWH(w, [20, 4, 40, 20], "I")
 
-tick = 0
 while 1:
-    tick += 1
-    c.radius = abs(sin(tick/100)*40)
+    if r.mouse_down():
+        r.symbol = "0"
+    if w.mouse_up() != None:
+        print(1)
+        r.symbol = "I"
     w.fill()
-    c.fill()
-    c.draw()
+    r.draw()
     w.show()

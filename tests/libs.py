@@ -40,6 +40,7 @@ class Score:
         self.x = 0
         self.y = 0
         self.score = score
+        self.w = Sprite(matrix, [0, 2], "")
 
         self.object = Sprite(matrix, [0, 0], score_sprite)
 
@@ -52,7 +53,8 @@ class Score:
         if line.__len__() % 2 == 1:
             line = line[:-3]+" |||"
 
-        self.object.line_split[2] = line
+        self.w.sprite = line
+        self.w.draw()
 
 start_sign = '''
 ._.....|.....__....._.....|.

@@ -26,12 +26,12 @@ class Main:
         self.objlist = [Score(self.matrix, self.score),
                         RectangleXYWH(self.matrix, [0, 30, 40, 10], ".")]
 
-        self.speed = 1
+        self.speed = 5
         self.sensivity = 1
-        self.difficulty = 1
+        self.difficulty = 10
         self.hp = 5
 
-        self.spawn_speed = 500
+        self.spawn_speed = 500/20
 
         while 1:
             self.menu_update()
@@ -44,14 +44,15 @@ class Main:
         while 1: 
             if press("s") and not(self.selection.selection):
                 self.selection.go_down()
-                self._menu_update()
 
             elif press("w") and self.selection.selection:
                 self.selection.go_up()
-                self._menu_update()
 
-            if press(" "):
+            if press("space"):
                 if not(self.selection.selection): break
+
+            self._menu_update()
+            
 
     def _menu_update(self):
 
@@ -71,10 +72,10 @@ class Main:
 
         while 1:
             self.score += self._tick*self.speed*10*self.difficulty
-            self.combo.line_split[0] = "Combo: x"+str(self.combo_score)
-            self.hp_label.line_split[0] = "Health: "+str(self.hp)
-            self.speed_label.line_split[0] = "Speed: "+str((((self._tick*10+(self.tick/100000)**2)*self.speed+(self.difficulty-1)/10)/10+.02)/self._tick)
-            self.score_multiplier.line_split[0] = "Score: x"+str(round(sqrt(self.combo_score)))
+            self.combo.sprite = "Combo: x"+str(self.combo_score)
+            self.hp_label.sprite = "Health: "+str(self.hp)
+            self.speed_label.sprite = "Speed: "+str((((self._tick*10+(self.tick/100000)**2)*self.speed+(self.difficulty-1)/10)/10+.02)/self._tick)
+            self.score_multiplier.sprite = "Score: x"+str(round(sqrt(self.combo_score)))
 
             if self.tick <= 1000: a = time.perf_counter()
 
@@ -92,7 +93,7 @@ class Main:
             elif press("s"):
                 self.y += .05*self.speed*self.sensivity if self.y < 38 else 0
 
-            if press(" "):
+            if press("space"):
                 if not(self.is_pressed):
                     for obj in self.objlist:
                         
@@ -109,7 +110,7 @@ class Main:
             else: self.is_pressed = False
 
 
-            if press("ESC"): break
+            if press("escape"): break
 
 
             self.matrix.fill(" ")
@@ -137,7 +138,7 @@ class Main:
 
 
             if self.hp <= 0:
-                while not(press("ESC")): pass
+                while not(press("escape")): pass
                 break
 
 

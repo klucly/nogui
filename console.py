@@ -20,7 +20,7 @@ class Console:
         else:
             self.myfont = pygame.font.SysFont('notomono', 16)
 
-            size = round(size[0]*10.), size[1] * 19
+            size = round(size[0]*10), size[1] * 19
 
         self.FPS = fps
         self.size = size
@@ -55,3 +55,20 @@ class Console:
         set_caption(f"Console {round(self.clock.get_fps())}fps" if self.show_fps else "Console")
 
         self.clock.tick(self.FPS)
+
+    def mouse_up():
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONUP:
+                pos = pygame.mouse.get_pos()
+                if os.name == "nt": return pos[0]/9, pos[1]/19
+                else: return pos[0]/10, pos[1]/19
+        return None
+            
+
+    def mouse_down():
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                if os.name == "nt": return pos[0]/9, pos[1]/19
+                else: return pos[0]/10, pos[1]/19
+        return None
