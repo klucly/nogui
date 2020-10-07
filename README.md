@@ -3,6 +3,8 @@
 Thats the game engine where you can make programs
 without gui `(Like in console)` very easy
 
+Was been testing on linux
+
 
 ## Installation
 

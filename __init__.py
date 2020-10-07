@@ -20,12 +20,12 @@ if install_packages:
 
 class Matrix:
 
-    def __init__(self, size = [10, 5], bg = " ") -> None:
+    def __init__(self, size = [10, 5], bg = " ", fps = 60, show_fps = False) -> None:
         '''The main class, uses like a screen, called matrix'''
 
         if use_local_console:
             import nogui.console as console
-            self.console = console.Console(size)
+            self.console = console.Console(size, fps, show_fps)
 
 
         self.matrix = []
@@ -593,33 +593,34 @@ class RectangleFULL:
 
 class Circle:
 
-    def __init__(self, matrix: Matrix, coords: list, radius: int, symbol: str, resolution = 50, fixed_out = False) -> None:
+    def __init__(self, matrix: Matrix, coords: list, radius: int, symbol: str, fixed_out = False) -> None:
 
         self.matrix = matrix
         self.coords = coords
         self.radius = radius
         self.symbol = symbol
-        self.resolusion = resolution
         self.fixed_out = fixed_out
 
     def draw(self):
 
-        # x^2+y^2=r^2
         r = self.radius
-        res = self.resolusion
-        for boool in range(2):
-            for step in range(-r*res, r*res, 1):
+        res = round(4*math.pi*r)
 
-                x = step/res
+        for i in range(res):
+            x = round(math.sin(360/res+i)*r)
+            y = round(math.cos(360/res+i)*(r/(2 if self.fixed_out else 1)))
+            try: self.matrix.matrix[y+self.coords[1]][x+self.coords[0]] = self.symbol
+            except: pass
 
-                try:
-                    y = math.sqrt(r**2-x**2)*(-1)**boool/(self.fixed_out+1)
-                    
-                    self.matrix.matrix[round(y+self.coords[1])][round(x+self.coords[0])] = self.symbol
+    def fill(self):
+        
+        r = round(self.radius)
+        res = round(4*math.pi*r)
 
+        for r_ in range(r):
+            for i in range(res):
+                x = round(math.sin(360/res+i)*r_)
+                y = round(math.cos(360/res+i)*(r_/(2 if self.fixed_out else 1)))
+                try: self.matrix.matrix[y+self.coords[1]][x+self.coords[0]] = self.symbol
                 except: pass
 
-
-        # x = cos(t); y = sin(t)
-
-        # for i in range()

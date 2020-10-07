@@ -6,7 +6,7 @@ import os
 
 class Console:
 
-    def __init__(self, size: list, fps = 480) -> None:
+    def __init__(self, size: list, fps = 60, show_fps = False) -> None:
 
         pygame.init()
         pygame.font.init()
@@ -20,15 +20,17 @@ class Console:
         else:
             self.myfont = pygame.font.SysFont('notomono', 16)
 
-            size = round(size[0]*9.8), size[1] * 19
+            size = round(size[0]*10.), size[1] * 19
 
         self.FPS = fps
         self.size = size
+        self.show_fps = show_fps
 
         self.screen = pygame.display.set_mode(size)
         set_caption("Console")
 
         self.clock = pygame.time.Clock()
+        
 
     def update(self, text: str) -> None:
             
@@ -50,5 +52,6 @@ class Console:
 
 
         pygame.display.update()
+        set_caption(f"Console {round(self.clock.get_fps())}fps" if self.show_fps else "Console")
 
         self.clock.tick(self.FPS)
