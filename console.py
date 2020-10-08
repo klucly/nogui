@@ -25,6 +25,7 @@ class Console:
         self.FPS = fps
         self.size = size
         self.show_fps = show_fps
+        self.event_list = []
 
         self.screen = pygame.display.set_mode(size)
         set_caption("Console")
@@ -33,8 +34,9 @@ class Console:
         
 
     def update(self, text: str) -> None:
-            
-        for i in pygame.event.get():
+        self.event_list = pygame.event.get()
+        
+        for i in self.event_list:
             if i.type == pygame.QUIT:
                 sys.exit()
 
@@ -56,19 +58,21 @@ class Console:
 
         self.clock.tick(self.FPS)
 
-    def mouse_up():
-        for event in pygame.event.get():
+    def mouse_up(self) -> bool:
+        # print(2)
+        for event in self.event_list:
+            # print(pygame.event.get())
             if event.type == pygame.MOUSEBUTTONUP:
-                pos = pygame.mouse.get_pos()
-                if os.name == "nt": return pos[0]/9, pos[1]/19
-                else: return pos[0]/10, pos[1]/19
-        return None
+                return True
+        return False
             
 
-    def mouse_down():
-        for event in pygame.event.get():
+    def mouse_down(self) -> bool:
+        for event in self.event_list:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
-                if os.name == "nt": return pos[0]/9, pos[1]/19
-                else: return pos[0]/10, pos[1]/19
-        return None
+                return True
+        return False
+
+    def mouse_coords(self) -> list:
+        pos = pygame.mouse.get_pos()
+        return (pos[0]/9, pos[1]/19) if os.name == "nt" else (pos[0]/10, pos[1]/19)

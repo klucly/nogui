@@ -5,6 +5,7 @@ use_local_console = True
 
 
 
+from math import sqrt
 import os
 import time
 import math
@@ -62,8 +63,10 @@ class Matrix:
         #This makes 2d array
         self.matrix = [[self.bg for i in range(self.size[0])] for j in range(self.size[1])] 
 
-    def mouse_down(self):return console.Console.mouse_down()
-    def mouse_up(self): return console.Console.mouse_up()
+    def mouse_down(self):return self.console.mouse_down()
+    def mouse_up(self): return self.console.mouse_up()
+
+    mouse_coords = console.Console.mouse_coords
 
 
 clear_console = lambda: os.system("cls" if os.name == "nt" else "clear")
@@ -107,23 +110,23 @@ class __Object2D__:
             return x_min, x_max, y_min, y_max
         else: return None
 
-    def mouse_up(self):
-        coords = console.Console.mouse_up()
-        if coords != None:
-            if coords[0] >= self.x_min and coords[0] <= self.x_max:
-                if coords[1] >= self.y_min and coords[1] <= self.y_max:
+    def mouse_down(self) -> bool:
+        if self.matrix.console.mouse_down():
+            coords = self.matrix.console.mouse_coords()
+            x_min, x_max, y_min, y_max = self.__get_global_coords__()
+            if coords[0] >= x_min and coords[0] <= x_max:
+                if coords[1] >= y_min and coords[1] <= y_max:
                     return True
         return False
 
-    def mouse_down(self):
-        coords = console.Console.mouse_down()
-        if coords != None:
-            if coords[0] >= self.x_min and coords[0] <= self.x_max:
-                if coords[1] >= self.y_min and coords[1] <= self.y_max:
+    def mouse_up(self) -> bool:
+        if self.matrix.console.mouse_up():
+            coords = self.matrix.console.mouse_coords()
+            x_min, x_max, y_min, y_max = self.__get_global_coords__()
+            if coords[0] >= x_min and coords[0] <= x_max:
+                if coords[1] >= y_min and coords[1] <= y_max:
                     return True
         return False
-
-
 
 
 class __Rectangle__(__Object2D__):
@@ -652,3 +655,25 @@ class Circle:
                 try: self.matrix.matrix[y+self.coords[1]][x+self.coords[0]] = self.symbol
                 except: pass
 
+    def mouse_down(self) -> bool:
+        "WIP"
+        if self.matrix.console.mouse_down():
+            coords = self.matrix.console.mouse_coords()
+            dx = coords[0]-self.coords[0]
+            dy = coords[1]-self.coords[1]
+            distance = (sqrt(dx**2+dy**2))
+            print(distance)
+            if distance <= self.radius+1:
+                return True
+        return False
+
+    def mouse_up(self) -> bool:
+        "WIP"
+        if self.matrix.console.mouse_up():
+            coords = self.matrix.console.mouse_coords()
+            dx = coords[0]-self.coords[0]
+            dy = coords[1]-self.coords[1]
+            distance = (sqrt(dx**2+dy**2))
+            if distance <= self.radius+1:
+                return True
+        return False
