@@ -331,12 +331,11 @@ class Polygon:
 
 
     def get_line(self, coords) -> list:
+        print(coords)
+        coords0 = Vec2(coords[0])
+        coords1 = Vec2(coords[1])
 
-        coords0 = coords[0]
-        coords1 = coords[1]
-
-        distanceX = coords1[0]-coords0[0]
-        distanceY = coords1[1]-coords0[1]
+        distanceX, distanceY = coords1-coords0
 
         distance = math.sqrt(distanceX**2 + distanceY**2)
         distance = round(distance)

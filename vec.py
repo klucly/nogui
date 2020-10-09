@@ -11,11 +11,11 @@ class Vec2:
 
         if obj == [..., ...]:
             obj = (0, 0)
-        elif obj[1] == ...:
+        if obj[1] == ...:
             obj = obj[0]
             if obj.__class__ == int or obj.__class__ == float:
                 obj = (obj, obj)
-        elif obj.__class__ == tuple:
+        if obj.__class__ == tuple:
             obj = list(obj)
 
 
@@ -109,7 +109,7 @@ class Vec2:
                 if sign == "!=": out.append(i != obj1.__object__[self.__object__.index(i)])
             return self.__class__(out)
         
-        else: raise TypeError
+        else: return False
 
     def __eq__(self, obj: object): return self.__comparison__(obj, "==")
     def __ne__(self, obj: object): return self.__comparison__(obj, "!=")
