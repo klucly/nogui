@@ -9,8 +9,10 @@ from math import sqrt
 import os
 import time
 import math
+from typing import Union
 
 from nogui import console
+from nogui.vec import Vec2
 
 if install_packages:
     try: from keyboard import is_pressed as _is_pressed
@@ -81,21 +83,21 @@ class __Object2D__:
 
 
         if self.__class__ == RectangleXY2:
-            x_min = min(self.coords[0], self.coords[2])
-            x_max = max(self.coords[0], self.coords[2])
+            x_min = min(self.coords1[0], self.coords2[0])
+            x_max = max(self.coords1[0], self.coords2[0])
 
-            y_min = min(self.coords[1], self.coords[3])
-            y_max = max(self.coords[1], self.coords[3])
+            y_min = min(self.coords1[1], self.coords2[1])
+            y_max = max(self.coords1[1], self.coords2[1])
 
             self.__figure_init__ = True
 
         elif self.__class__ == RectangleXYWH or self.__class__ == Sprite:
 
-            x1 = self.xywh[0]
-            x2 = self.xywh[0]+self.xywh[2]
+            x1 = self.xy[0]
+            x2 = self.xy[0]+self.wh[0]
 
-            y1 = self.xywh[1]
-            y2 = self.xywh[1]+self.xywh[3]
+            y1 = self.xy[1]
+            y2 = self.xy[1]+self.wh[1]
 
             x_min = min(x1, x2)
             x_max = max(x1, x2)
@@ -131,12 +133,6 @@ class __Object2D__:
 
 class __Rectangle__(__Object2D__):
 
-    def __init__(self) -> None:
-
-        self.coords = [0, 0]
-        self.matrix = Matrix()
-        self.symbol = " "
-
     def draw(self) -> None:
 
         buffer_matrix = self.matrix.matrix
@@ -157,21 +153,23 @@ class __Rectangle__(__Object2D__):
 
 class RectangleXY2(__Rectangle__):
 
-    def __init__(self, matrix: Matrix, coords: list, symbol: str) -> None:
+    def __init__(self, matrix: Matrix, coords1: Union[list, tuple, Vec2], coords2: Union[list, tuple, Vec2], symbol: str) -> None:
         '''Rectangle, that uses 2 global points on the matrix to be drawed'''
         
-        self.coords = coords
+        self.coords1 = coords1
+        self.coords2 = coords2
         self.symbol = symbol
         self.matrix = matrix
 
 
 class RectangleXYWH(__Rectangle__):
 
-    def __init__(self, matrix: Matrix, xywh: list, symbol: str) -> None:
+    def __init__(self, matrix: Matrix, xy: Union[list, tuple, Vec2], wh: Union[list, tuple, Vec2], symbol: str) -> None:
         '''Rectangle, that uses x, y, width, height to be drawed'''
 
         self.matrix = matrix
-        self.xywh = xywh
+        self.xy = xy
+        self.wh = wh
         self.symbol = symbol
 
 
@@ -212,10 +210,10 @@ def collision(obj1, obj2):
 
 class Sprite(__Object2D__):
 
-    def __init__(self, matrix: Matrix, coords, sprite) -> None:
+    def __init__(self, matrix: Matrix, xy: Union[list, tuple, Vec2], sprite: str) -> None:
         self.sprite = sprite
-        self.xy = coords
-        self.xywh = [0, 0, 0, 0]
+        self.xy = xy
+        self.wh = [0, 0]
         self.matrix = matrix
 
     def draw(self) -> None:
@@ -230,10 +228,10 @@ class Sprite(__Object2D__):
 
         height = sprite_lines_split.__len__()
 
-        self.xywh = [self.xy[0], self.xy[1], width, height]
+        self.wh = width, height
         self.matrix = self.matrix
         self.line_split = sprite_lines_split
-        self.coords = self.xywh[0], self.xywh[1], self.xywh[0]+self.xywh[2], self.xywh[1]+self.xywh[3]
+        self.coords = self.xy[0], self.xy[1], self.xy[0]+self.wh[0], self.xy[1]+self.wh[1]
 
         buffer_matrix = self.matrix.matrix
         x_min, x_max, y_min, y_max = self.__get_global_coords__()
@@ -257,7 +255,7 @@ class Sprite(__Object2D__):
 
 class Polygon:
 
-    def __init__(self, matrix: Matrix, coords: list, symbol: str, angle = 0, fixed_out = False) -> None:
+    def __init__(self, matrix: Matrix, coords: Union[list, tuple], symbol: str, angle = 0, fixed_out = False) -> None:
 
         self.coords = coords
         self.matrix = matrix
@@ -591,7 +589,7 @@ class Polygon:
 
 class RectangleFULL:
 
-    def __init__(self, matrix: Matrix, xy: list, wh: list, symbol: str, angle: int, fixed_out = False) -> None:
+    def __init__(self, matrix: Matrix, xy: Union[list, tuple, Vec2], wh: Union[list, tuple, Vec2], symbol: str, angle: int, fixed_out = False) -> None:
 
         self.matrix = matrix
         self.xy = xy
@@ -624,7 +622,7 @@ class RectangleFULL:
 
 class Circle:
 
-    def __init__(self, matrix: Matrix, coords: list, radius: int, symbol: str, fixed_out = False) -> None:
+    def __init__(self, matrix: Matrix, coords: Union[list, tuple, Vec2], radius: int, symbol: str, fixed_out = False) -> None:
 
         self.matrix = matrix
         self.coords = coords
@@ -677,3 +675,5 @@ class Circle:
             if distance <= self.radius+1:
                 return True
         return False
+
+

@@ -3,7 +3,7 @@ from nogui import *
 
 w = Matrix([80, 40], " ", 60, True)
 
-r = RectangleXYWH(w, [20, 4, 30, 20], "W")
+r = RectangleXYWH(w, [20, 4], [30, 20], "W")
 
 def on_click():
     print(1)

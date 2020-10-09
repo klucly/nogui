@@ -20,12 +20,12 @@ class Plate:
         self.is_pressed = False
         self.difficulty = difficulty
 
-        self.object = RectangleXYWH(matrix, [self.x, self.y, self.wh, self.wh], "#")
+        self.object = RectangleXYWH(matrix, [self.x, self.y], [self.wh, self.wh], "#")
 
     def update(self):
         self.y += ((self._tick*10+(self.tick/100000)**2)*self.speed+(self.difficulty-1)/10)/10+.02
 
-        self.object.xywh[1] = self.y
+        self.object.xy[1] = self.y
 
         self.object.draw()
 

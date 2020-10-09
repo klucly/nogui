@@ -6,7 +6,7 @@ class Main:
     def __init__(self) -> None:
 
         self.matrix = Matrix([40, 40], ".")
-        self.sq = RectangleXYWH(self.matrix, [3, 35, 4, 2], "I")
+        self.sq = RectangleXYWH(self.matrix, [3, 35], [4, 2], "I")
         self.tick = 100
         self._tick = 0.001
         self.first_ticks = []
@@ -24,7 +24,7 @@ class Main:
         self.y = 32
         self.is_pressed = False
         self.objlist = [Score(self.matrix, self.score),
-                        RectangleXYWH(self.matrix, [0, 30, 40, 10], ".")]
+                        RectangleXYWH(self.matrix, [0, 30], [40, 10], ".")]
 
         self.speed = 5
         self.sensivity = 1
@@ -143,8 +143,8 @@ class Main:
 
 
     def sq_update(self):
-        self.sq.xywh[0] = self.x
-        self.sq.xywh[1] = self.y
+        self.sq.xy[0] = self.x
+        self.sq.xy[1] = self.y
 
         self.sq.draw()
 
