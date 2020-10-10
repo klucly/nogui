@@ -331,7 +331,6 @@ class Polygon:
 
 
     def get_line(self, coords) -> list:
-        print(coords)
         coords0 = Vec2(coords[0])
         coords1 = Vec2(coords[1])
 
@@ -463,7 +462,6 @@ class Polygon:
 
                 pol.draw()
                     
-            print(out_coords1)
 
                 # for coords1 in self.get_line(coords):
                 #     self.matrix.matrix[coords1[1]][coords1[0]] = "%"
@@ -658,7 +656,6 @@ class Circle:
             dx = coords[0]-self.coords[0]
             dy = coords[1]-self.coords[1]
             distance = (sqrt(dx**2+dy**2))
-            print(distance)
             if distance <= self.radius+1:
                 return True
         return False
