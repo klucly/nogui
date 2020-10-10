@@ -117,3 +117,7 @@ class Vec2:
     def __gt__(self, obj: object): return self.__comparison__(obj, "<")
     def __le__(self, obj: object): return self.__comparison__(obj, ">=")
     def __ge__(self, obj: object): return self.__comparison__(obj, "<=")
+
+    def index(self, number: Union[int, float]): return self.__object__.index(number)
+
+    def __hash__(self) -> int: return id(self)

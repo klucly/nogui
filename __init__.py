@@ -346,8 +346,7 @@ class Polygon:
             
             x = round( distanceX / distance * step +coords0[0] )
             y = round( distanceY / distance * step +coords0[1] )
-
-            points[x, y] = None
+            points[Vec2(x, y)] = None
 
         for point in points:
             out.append(point)
