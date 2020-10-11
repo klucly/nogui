@@ -330,28 +330,26 @@ class Polygon:
                 return out
 
 
-    def get_line(self, coords) -> list:
+    def get_line(self, coords: Union[list, tuple]) -> list:
         coords0 = Vec2(coords[0])
         coords1 = Vec2(coords[1])
 
         distanceX, distanceY = coords1-coords0
+        # print(f"{coords1}-{coords0}")
 
         distance = math.sqrt(distanceX**2 + distanceY**2)
         distance = round(distance)
-        points = {}
-        out = []
+        points = []
+        # print(f"distance: {distance}, x: {distanceX}, y: {distanceY}")
 
         for step in range(distance):
             
             x = round( distanceX / distance * step +coords0[0] )
             y = round( distanceY / distance * step +coords0[1] )
-            points[Vec2(x, y)] = None
+            points.append(Vec2(x, y))
+        # print(f"{coords}, {points}")
 
-        for point in points:
-            out.append(point)
-        
-
-        return out
+        return points
 
     def _fix_coords(self, coords):
         y_s = []
@@ -634,13 +632,14 @@ class Circle:
         for i in range(res):
             x = round(math.sin(360/res+i)*r)
             y = round(math.cos(360/res+i)*(r/(2 if self.fixed_out else 1)))
-            try: self.matrix.matrix[y+self.coords[1]][x+self.coords[0]] = self.symbol
-            except: pass
+            if min((Vec2(self.coords)+(x, y)) >= 0) > 0:
+                try: self.matrix.matrix[y+self.coords[1]][x+self.coords[0]] = self.symbol
+                except: pass
 
     def fill(self):
         
         r = round(self.radius)
-        res = round(4*math.pi*r)
+        res = round(5*math.pi*r)
 
         for r_ in range(r):
             for i in range(res):
@@ -670,5 +669,3 @@ class Circle:
             if distance <= self.radius+1:
                 return True
         return False
-
-
