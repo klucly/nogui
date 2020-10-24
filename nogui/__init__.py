@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-install_packages = True
+install_packages = False
 use_local_console = True
 
 

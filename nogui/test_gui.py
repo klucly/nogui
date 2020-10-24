@@ -1,7 +1,7 @@
 import nogui
-from nogui import Vec2
+from nogui import RectangleFULL, Vec2
 import tkinter
-from tkinter import messagebox
+from tkinter import messagebox, filedialog
 import threading
 from math import sin, cos, tan, degrees, radians
 import os
@@ -13,7 +13,7 @@ class Thread(threading.Thread):
 
     def run(self) -> None: self.func()
         
-        
+
 class PropertiesWin:
     size = "200x600"
     win = None
@@ -31,9 +31,9 @@ class PropertiesWin:
         self.menu.file = tkinter.Menu(self.menu, tearoff = 0)
         self.menu.add_cascade(label = "File", menu = self.menu.file)
 
-        self.menu.file.add_command(label = "New", command = lambda: messagebox.showerror("Nope", "Sorry, I didnt finish that yet"))
-        self.menu.file.add_command(label = "Save", command = lambda: messagebox.showerror("Nope", "Sorry, I didnt finish that yet"))
-        self.menu.file.add_command(label = "Save as", command = lambda: messagebox.showerror("Nope", "Sorry, I didnt finish that yet"))
+        self.menu.file.add_command(label = "Open", command = main.open)
+        self.menu.file.add_command(label = "Save", command = main.save)
+        self.menu.file.add_command(label = "Save as", command = main.saveas)
         self.menu.file.add_command(label = "Start/stop", command = main.menu_start_stop)
 
         self.menu.create = tkinter.Menu(self.menu, tearoff = 0)
@@ -89,6 +89,9 @@ class Main:
     tick = 0
     error_count = 0
     run = False
+    saved = False
+    need_save = False
+    need_open = False
 
     def first_window_update(self) -> None:
         str_size = self.first_window.size_input.get()
@@ -134,8 +137,7 @@ class Main:
         while 1: self.canvasThread()
 
 
-    def menu_start_stop(self):
-        self.run = not self.run
+    def menu_start_stop(self) -> None: self.run = not self.run
 
 
     def create_object(self, obj) -> None:
@@ -147,7 +149,7 @@ class Main:
             self.objectlist.append(nogui.RectangleFULL(self.matrix, Vec2(1, 1), Vec2(5, 5), "#", 0))
         elif obj == "Polygon":
             self.objectlist.append(nogui.Polygon(self.matrix, [[2, 5], [10, 10], [4, 12]], "#"))
-        self.objectlist[-1].__string_attr_list__ = {}
+        self.objectlist[-1].attr = {}
         
         self.update_objlist_widget()
 
@@ -187,12 +189,12 @@ class Main:
         attrs = {}
         self.attrList = []
         attrList = selected_obj.__dir__()
-        blocked_attrs = ["matrix", "x_min", "x_max", "y_min", "y_max", "figure", "lines", "center", "max_x", "min_x", "min_y", "max_y"]
+        blocked_attrs = ["matrix", "x_min", "x_max", "y_min", "y_max", "figure", "lines", "center", "max_x", "min_x", "min_y", "max_y", "attr"]
 
         for attr in attrList:
             if attr[0] != "_" and getattr(selected_obj, attr).__class__ != self.__init__.__class__ and attr not in blocked_attrs:
                 # attrs[attr] = getattr(selected_obj, attr)
-                try: attrs[attr] = selected_obj.__string_attr_list__[attr]
+                try: attrs[attr] = selected_obj.attr[attr]
                 except: attrs[attr] = getattr(selected_obj, attr)
                 self.attrList.append(attr)
 
@@ -213,7 +215,7 @@ class Main:
         self.properties_win.objectlist_widget.menu.post(x, y)
 
 
-    def delete_object(self):
+    def delete_object(self) -> None:
         if self.curselected_index != None:
             self.objectlist.pop(self.curselected_index)
             if self.curselected_index != 0:
@@ -235,6 +237,85 @@ class Main:
         self.update_properties_widget([])
 
 
+    def command(self, command: str, attrs: list) -> None:
+        
+        if command == "add":
+            obj = attrs[0]
+
+            if obj == "rectangle" or obj == "rect":
+                self.objectlist.append(nogui.RectangleXYWH(self.matrix, Vec2(int(attrs[1]), int(attrs[2])), Vec2(int(attrs[3]), int(attrs[4])), attrs[5]))
+            elif obj == "circle":
+                self.objectlist.append(nogui.Circle(self.matrix, Vec2(int(attrs[1]), int(attrs[2])), int(attrs[3]), attrs[4]))
+            elif obj == "superrect":
+                self.objectlist.append(nogui.RectangleFULL(self.matrix, Vec2(int(attrs[1]), int(attrs[2])), Vec2(int(attrs[3]), int(attrs[4])), attrs[5], int(attrs[6])))
+
+        elif command == "change" or command == "c":
+            obj_i, attr = attrs[0].split(".")
+            obj = self.objectlist[int(obj_i)]
+            try: obj.attr[attr] = eval(attrs[1])
+            except: obj.attr[attr] = attrs[1]
+
+
+    def saveas(self) -> None: self.need_save = True
+
+
+    def save(self, file = "None") -> None:
+        if not self.saved:
+            self.need_save = True
+            return None
+        output = {}
+
+        for obj in self.objectlist:
+            if obj.__class__ == nogui.RectangleXYWH:
+                obj_type = "Rectangle "+str(self.objectlist.index(obj))
+            elif obj.__class__ == nogui.Circle:
+                obj_type = "Circle "+str(self.objectlist.index(obj))
+            elif obj.__class__ == nogui.RectangleFULL:
+                obj_type = "RectangleFULL "+str(self.objectlist.index(obj))
+            elif obj.__class__ == nogui.Polygon:
+                obj_type = "Polygon "+str(self.objectlist.index(obj))
+            else: obj_type = "Undefined "+str(self.objectlist.index(obj))
+
+            output[obj_type] = obj.attr
+
+        if file == None:
+            self.saved = False
+            
+        elif file != "None":
+            file.write(str(output))
+            file.close()
+
+
+    def open(self, file = "None") -> None:
+        if file == "None":
+            self.need_open = True
+            return None
+        elif file == None:
+            return None
+
+        self.curselected_index = None
+        self.objectlist = []
+        inp = file.read()
+        file.close()
+        inp = eval(inp)
+
+        for obj in inp:
+            
+            if obj.split(" ")[0] == "Rectangle":
+                self.create_object("Rectangle")
+            elif obj.split(" ")[0] == "Circle":
+                self.create_object("Circle")
+            elif obj.split(" ")[0] == "RectangleFULL":
+                self.create_object("SuperRectangle")
+            elif obj.split(" ")[0] == "Polygon":
+                self.create_object("Polygon")
+            elif obj.split(" ")[0] == "Undefined":
+                ...
+
+            for attr in inp[obj]:
+                self.objectlist[-1].attr[attr] = inp[obj][attr]
+
+
 
 
     def properties_thread(self) -> None:
@@ -252,17 +333,27 @@ class Main:
                     index = self.properties_win.objectlist_input_list.index(propertyinp)
                     try:
                         setattr(selected_obj, self.get_attrs_from_obj(selected_obj)[1][index], property)
-                        selected_obj.__string_attr_list__[self.attrList[index]] = property_str
+                        selected_obj.attr[self.attrList[index]] = property_str
                     except: ...
 
-                for obj in self.objectlist:
-                    try:
-                        attrs = self.get_attrs_from_obj(obj)[0]
-                        for attr in attrs:
-                            try: setattr(obj, attr, eval(attrs[attr]))
-                            except: setattr(obj, attr, attrs[attr])
-                    except:
-                        ...
+            for obj in self.objectlist:
+                try:
+                    attrs = self.get_attrs_from_obj(obj)[0]
+                    for attr in attrs:
+                        try: setattr(obj, attr, eval(attrs[attr]))
+                        except: setattr(obj, attr, attrs[attr])
+                except:
+                    ...
+
+            if self.need_save:
+                file = filedialog.asksaveasfile(filetypes = (("Nogui project", "*.ngs"),("All files", "*.*")))
+                self.need_save = False
+                self.saved = True
+                self.save(file)
+            if self.need_open:
+                file = filedialog.askopenfile()
+                self.need_open = False
+                self.open(file)
 
 
     def canvasThread(self) -> None:
@@ -270,6 +361,8 @@ class Main:
         try:
             for obj in self.objectlist:
                 obj.draw()
+                if not hasattr(obj, "attr"):
+                    obj.attr = {}
             self.matrix.show()
         except: pass
         if self.run:
@@ -284,6 +377,9 @@ class Main:
             inp = input(">>>")
             if inp[0] == "$":
                 os.system(inp[1:])
+            elif inp[0] == "/":
+                inpspit = inp[1:].split()
+                self.command(inpspit[0], inpspit[1:])
             else:
                 try: exec(inp)
                 except: print("You have an error somewhere...")
