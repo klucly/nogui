@@ -51,7 +51,7 @@ class Matrix:
 
         for line in buffer_matrix:
 
-            out += "".join(line)+"\n"
+            out += "".join(list(line))+"\n"
         
         if use_local_console: self.console.update(out)
         else: print(out)

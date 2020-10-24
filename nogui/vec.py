@@ -5,7 +5,7 @@ class Vec2:
 
     @overload
     def __init__(self, obj: Union[list, tuple, int, float] = ...) -> None: ...
-    def __init__(self, number1: Union[int, float], number2: Union[int, float] = ...) -> None: self._init([number1, number2])
+    def __init__(self, number1: Union[int, float] = ..., number2: Union[int, float] = ...) -> None: self._init([number1, number2])
 
     def _init(self, obj: object = ...) -> None:
 
@@ -59,7 +59,7 @@ class Vec2:
     def __floordiv__(self, obj: object): return self.__math_func__(obj, "//")
     def __mod__(self, obj: object): return self.__math_func__(obj, "%")
     def __neg__(self):
-        for i in range(2): self.__object__[i] *= -1
+        for i in range(len(self.__object__)): self.__object__[i] *= -1
         return self.__class__(self.__object__)
 
     def __contains__(self, obj: Union[int, float]): return obj in self.__object__
