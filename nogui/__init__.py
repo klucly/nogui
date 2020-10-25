@@ -669,3 +669,7 @@ class Circle:
             if distance <= self.radius+1:
                 return True
         return False
+
+if __name__ == "__main__":
+    from test_gui import Main
+    Main()

@@ -1,10 +1,12 @@
-import nogui
-from nogui import RectangleFULL, Vec2
+import __init__ as nogui
+from nogui import Vec2
 import tkinter
-from tkinter import messagebox, filedialog
+from tkinter import filedialog
 import threading
 from math import sin, cos, tan, degrees, radians
 import os
+from time import sleep
+import importlib
 
 class Thread(threading.Thread):
     def __init__(self, func) -> None:
@@ -36,6 +38,11 @@ class PropertiesWin:
         self.menu.file.add_command(label = "Save as", command = main.saveas)
         self.menu.file.add_command(label = "Start/stop", command = main.menu_start_stop)
 
+        self.menu.file.files = tkinter.Menu(self.menu.file, tearoff = 0)
+        self.menu.file.add_cascade(label = "Files", menu = self.menu.file.files)
+
+        self.menu.file.files.add_command(label = "New", command = main.new_pyfile)
+
         self.menu.create = tkinter.Menu(self.menu, tearoff = 0)
         self.menu.add_cascade(label = "Create", menu = self.menu.create)
 
@@ -43,6 +50,7 @@ class PropertiesWin:
         self.menu.create.add_command(label = "Circle", command = lambda: main.create_object("Circle"))
         self.menu.create.add_command(label = "Super-rectangle", command = lambda: main.create_object("SuperRectangle"))
         self.menu.create.add_command(label = "Polygon", command = lambda: main.create_object("Polygon"))
+
 
         self.win.config(menu = self.menu)
 
@@ -92,7 +100,13 @@ class Main:
     saved = False
     need_save = False
     need_open = False
+    mainthread = None
+    show_console_errors = True
+    update_file_tread = False
 
+    filedir = {"name":str(id(properties_win)), "files":{}}
+    filelibs = []
+    
     def first_window_update(self) -> None:
         str_size = self.first_window.size_input.get()
         str_bg_symbol = self.first_window.bg_symbol_input.get()
@@ -132,7 +146,8 @@ class Main:
         self.matrix = nogui.Matrix(self.win_size, self.win_bg)
 
         Thread(self.properties_thread).start()
-        Thread(self.calculationsTread).start()
+        Thread(self.debugConsoleTread).start()
+        Thread(self.filesTread).start()
 
         while 1: self.canvasThread()
 
@@ -237,7 +252,9 @@ class Main:
         self.update_properties_widget([])
 
 
-    def command(self, command: str, attrs: list) -> None:
+    def command(self, command: str) -> None:
+        attrs = command.split(" ")[1:]
+        command = command.split(" ")[0]
         
         if command == "add":
             obj = attrs[0]
@@ -248,12 +265,23 @@ class Main:
                 self.objectlist.append(nogui.Circle(self.matrix, Vec2(int(attrs[1]), int(attrs[2])), int(attrs[3]), attrs[4]))
             elif obj == "superrect":
                 self.objectlist.append(nogui.RectangleFULL(self.matrix, Vec2(int(attrs[1]), int(attrs[2])), Vec2(int(attrs[3]), int(attrs[4])), attrs[5], int(attrs[6])))
+            self.mainthread = self.update_objlist_widget
 
         elif command == "change" or command == "c":
             obj_i, attr = attrs[0].split(".")
             obj = self.objectlist[int(obj_i)]
+            if self.curselected_index == int(obj_i):
+                try:
+                    self.mainthread = lambda: self.properties_win.objectlist_input_list[self.get_attrs_from_obj(obj)[1].index(attr)].delete(0, tkinter.END)
+                    sleep(.01)
+                    self.mainthread = lambda: self.properties_win.objectlist_input_list[self.get_attrs_from_obj(obj)[1].index(attr)].insert(0, attrs[1])
+                except: pass
             try: obj.attr[attr] = eval(attrs[1])
-            except: obj.attr[attr] = attrs[1]
+            except:
+                try: obj.attr[attr] = attrs[1]
+                except: pass
+            try: setattr(obj, attr, obj.attr[attr])
+            except: pass
 
 
     def saveas(self) -> None: self.need_save = True
@@ -263,7 +291,7 @@ class Main:
         if not self.saved:
             self.need_save = True
             return None
-        output = {}
+        output = {"objlist":{}}
 
         for obj in self.objectlist:
             if obj.__class__ == nogui.RectangleXYWH:
@@ -276,7 +304,10 @@ class Main:
                 obj_type = "Polygon "+str(self.objectlist.index(obj))
             else: obj_type = "Undefined "+str(self.objectlist.index(obj))
 
-            output[obj_type] = obj.attr
+            output["objlist"][obj_type] = obj.attr
+
+        output["files"] = self.filedir["files"]
+
 
         if file == None:
             self.saved = False
@@ -299,7 +330,12 @@ class Main:
         file.close()
         inp = eval(inp)
 
-        for obj in inp:
+        for filename in inp["files"]:
+            fileinp = inp["files"][filename]
+            self.new_pyfile(fileinp)
+
+
+        for obj in inp["objlist"]:
             
             if obj.split(" ")[0] == "Rectangle":
                 self.create_object("Rectangle")
@@ -312,8 +348,45 @@ class Main:
             elif obj.split(" ")[0] == "Undefined":
                 ...
 
-            for attr in inp[obj]:
-                self.objectlist[-1].attr[attr] = inp[obj][attr]
+            for attr in inp["objlist"][obj]:
+                self.objectlist[-1].attr[attr] = inp["objlist"][obj][attr]
+
+
+    def new_pyfile(self, insert = "") -> None:
+        direct = self.filedir["name"]
+        if direct not in os.listdir("files"):
+            os.mkdir("files/"+direct)
+            self.properties_win.menu.file.files.add_separator()
+        
+
+        dirlist = os.listdir("files/"+direct)
+        filelistlen = (len(dirlist)-1 if len(dirlist)-1 >= 0 else 0)
+
+        filename = "file-"+str(filelistlen)
+
+        with open(f"files/{direct}/{filename}.py", "w") as file:
+            file.write(insert)
+
+        self.properties_win.menu.file.files.add_command(label = filename, command = lambda: self.open_file(filename))
+        self.filedir["files"][filename] = ""
+
+        file = importlib.__import__(f"files.{self.filedir['name']}.{filename}")
+        file = getattr(getattr(file, self.filedir['name']), filename)
+        self.filelibs.append(file)
+
+
+    def open_file(self, file) -> None:
+        if os.name == "nt":
+            os.system(f"files/{self.filedir['name']}/{file}.py")
+        else:
+            os.system(f"open files/{self.filedir['name']}/{file}.py")
+            os.system(f"kde-open files/{self.filedir['name']}/{file}.py")
+            os.system(f"xdg-open files/{self.filedir['name']}/{file}.py")
+            os.system(f"gnome-open files/{self.filedir['name']}/{file}.py")
+            nogui.clear_console()
+        sleep(.5)
+        print(">>>", end = "")
+
 
 
 
@@ -354,7 +427,10 @@ class Main:
                 file = filedialog.askopenfile()
                 self.need_open = False
                 self.open(file)
-
+            if self.mainthread != None:
+                self.mainthread()
+                self.mainthread = None
+                
 
     def canvasThread(self) -> None:
         self.matrix.fill()
@@ -365,24 +441,54 @@ class Main:
                     obj.attr = {}
             self.matrix.show()
         except: pass
+
+        if self.tick == 2:
+            for filename in self.filedir["files"]:
+                with open(f"files/{self.filedir['name']}/{filename}.py") as file:
+                    fileinp = file.read()
+                self.filedir["files"][filename] = fileinp
+        self.update_file_tread = True
+
         if self.run:
             self.tick += 1
         else:
             self.tick = 0
 
 
-    def calculationsTread(self) -> None:
+    def debugConsoleTread(self) -> None:
         print("Debug console initializated")
         while 1:
             inp = input(">>>")
-            if inp[0] == "$":
-                os.system(inp[1:])
-            elif inp[0] == "/":
-                inpspit = inp[1:].split()
-                self.command(inpspit[0], inpspit[1:])
-            else:
-                try: exec(inp)
-                except: print("You have an error somewhere...")
+            if len(inp) > 1:
+                if inp[0] == "$":
+                    os.system(inp[1:])
+                elif inp[0] == "/":
+                    self.command(inp[1:])
+                else:
+                    if self.show_console_errors:
+                        try: exec(inp)
+                        except: print("You have an error somewhere...")
+                    else:
+                        exec(inp)
+
+
+    def filesTread(self) -> None:
+        while 1:
+        
+            if self.update_file_tread:
+                
+                if self.tick == 2:
+                    for i in range(len(self.filelibs)):
+                        self.filelibs[i] = importlib.reload(self.filelibs[i])
+                        if hasattr(self.filelibs[i], "start"):
+                            self.filelibs[i].start(self)
+
+                if self.run:
+                    for i in range(len(self.filelibs)):
+                        if hasattr(self.filelibs[i], "loop"):
+                            self.filelibs[i].loop(self)
+            
+                self.update_file_tread = False
 
 
 if __name__ == "__main__":
