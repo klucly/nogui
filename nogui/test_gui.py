@@ -9,7 +9,6 @@ import os
 from time import sleep
 import importlib
 import shutil
-import pygame
 
 class Thread(threading.Thread):
     def __init__(self, func) -> None:
@@ -69,7 +68,7 @@ class PropertiesWin:
             if str_func[0] != "_":
                 if func.__class__ == self.create_win.__class__:
                     if func.__code__.co_argcount <= 1:
-                        if str_func[-6:] == "thread" or str_func[-6:] == "Thread":
+                        if "thread" in str_func or "Thread" in str_func:
                             self.menu.functions.add_command(label = func.__code__.co_name, command = func, background = "#700", activebackground = "#b00", foreground = "#ccc", activeforeground = "#000")
                         elif "update" in str_func:
                             self.menu.functions.add_command(label = func.__code__.co_name, command = func, background = "#070", activebackground = "#0b0", foreground = "#ccc", activeforeground = "#000")
@@ -115,7 +114,7 @@ class PropertiesWin:
         self.win.bind("<Alt-r>", lambda something: main.reload_files())
         self.win.bind("<Alt-e>", lambda something: main.menu_start_stop())
         self.win.bind("<Control-s>", lambda something: main.save())
-        self.win.bind("<Control-Shift-s>", lambda something: main.saveas())
+        self.win.bind("<Control-Shift-S>", lambda something: main.saveas())
         self.win.bind("<Control-o>", lambda something: main.open())
 
 class Main:
@@ -124,7 +123,8 @@ class Main:
     first_window.size_input = tkinter.Entry(first_window, width = 7, insertwidth = 7)
     first_window.bg_symbol_text = tkinter.Label(first_window, text = "Bg symbol: ", fg="#fff")
     first_window.bg_symbol_input = tkinter.Entry(first_window, insertwidth = 1, width = 1)
-    first_window.create_button = tkinter.Button(first_window, text = "Create new app")
+    first_window.create_button = tkinter.Button(first_window, text = "Create")
+    first_window.open_button = tkinter.Button(first_window, text = "Open")
     first_window.is_broken = False
     properties_win = PropertiesWin()
     curselected_index = None
@@ -143,6 +143,10 @@ class Main:
     mainthread = None
     show_console_errors = True
     update_file_tread = False
+    properties_thread_ = None
+    canvasThread_ = None
+    debugConsoleThread_ = None
+    filesThread_ = None
 
     filedir = {"name":str(id(properties_win)), "files":{}}
     filelibs = []
@@ -170,11 +174,25 @@ class Main:
         self.first_window.size_input.grid(row = 1, column = 2)
         self.first_window.bg_symbol_text.grid(row = 2, column = 1)
         self.first_window.bg_symbol_input.grid(row = 2, column = 2)
-        self.first_window.create_button.grid(row = 3, column = 1, columnspan = 2)
-        self.first_window.create_button.bind("<Button-1>", lambda coords: self.start())
+        self.first_window.create_button.grid(row = 3, column = 1)
+        self.first_window.open_button.grid(row = 3, column = 2)
+        self.first_window.create_button["command"] = self.start
+        self.first_window.open_button["command"] = self.first_open
         if "files" in os.listdir("."): shutil.rmtree("files")
         os.mkdir("files")
-        while not self.first_window.is_broken: self.first_window.update()
+        try:
+            while not self.first_window.is_broken: self.first_window.update()
+        except tkinter.TclError: print("Exiting...")
+
+
+    def thread_init(self) -> None:
+        self.properties_thread_ = Thread(self.properties_thread)
+        self.properties_thread_.start()
+        self.debugConsoleThread_ = Thread(self.debugConsoleThread)
+        self.debugConsoleThread_.start()
+        self.filesThread_ = Thread(self.filesThread)
+        self.filesThread_.start()
+        while 1: self.canvasThread()
 
 
     def start(self) -> None:
@@ -186,11 +204,17 @@ class Main:
         
         self.matrix = nogui.Matrix(self.win_size, self.win_bg, 30, 1)
 
-        Thread(self.properties_thread).start()
-        Thread(self.debugConsoleThread).start()
-        Thread(self.filesThread).start()
-        while 1: self.canvasThread()
+        self.thread_init()
 
+
+    def first_open(self) -> None:
+        self.first_window.destroy()
+        self.first_window.is_broken = True
+        self.matrix = nogui.Matrix(self.win_size, self.win_bg, 30, 1)
+
+        self.mainthread = lambda: self.open(filedialog.askopenfile())
+        self.thread_init()
+        
 
     def menu_start_stop(self) -> None: self.run = not self.run
 
@@ -436,7 +460,9 @@ class Main:
         print(">>>", end = "")
 
 
-    def reboot_file_thread(self) -> None: Thread(self.filesThread).start()
+    def reboot_file_thread(self) -> None:
+        self.filesThread_ = Thread(self.filesThread)
+        self.filesThread_.start()
 
 
     def reload_files(self) -> None: self.tick = 0
@@ -451,6 +477,8 @@ class Main:
         if self.filelibs == []:
             self.properties_win.menu.file.files.delete(tkinter.END)
         
+
+    def quit(self): ...
 
 
 
@@ -482,7 +510,10 @@ class Main:
                         except: setattr(obj, attr, attrs[attr])
                 except:
                     ...
-            self.properties_win.win.update()
+            try:
+                self.properties_win.win.update()
+            except tkinter.TclError:
+                self.quit()
 
             if self.need_save:
                 file = filedialog.asksaveasfile(filetypes = (("Nogui project", "*.ngs"),("All files", "*.*")))
