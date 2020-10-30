@@ -70,6 +70,8 @@ class Matrix:
 
     mouse_coords = console.Console.mouse_coords
 
+    def __repr__(self) -> str: return "nogui.Matrix"
+
 
 clear_console = lambda: os.system("cls" if os.name == "nt" else "clear")
 
@@ -149,6 +151,9 @@ class __Rectangle__(__Object2D__):
                 try:
                     buffer_matrix[line_index][pixel_index] = self.symbol
                 except: ...
+
+    def __repr__(self) -> str: return "nogui.Rectangle"
+
 
 
 class RectangleXY2(__Rectangle__):
@@ -252,6 +257,8 @@ class Sprite(__Object2D__):
                     buffer_matrix[line_index][pixel_index] = a
                 except: ...
 
+    def __repr__(self) -> str: return "nogui.Sprite"
+
 
 class Polygon:
 
@@ -328,6 +335,8 @@ class Polygon:
                     to_add2 = [self.coords[ii+1][0], self.coords[ii+1][1]]
                     out.append(self.get_line([to_add1, to_add2]))
                 return out
+
+    def __repr__(self) -> str: return "nogui.Polygon"
 
 
     def get_line(self, coords: Union[list, tuple]) -> list:
@@ -595,6 +604,8 @@ class RectangleFULL:
         x, y, w, h = xy[0], xy[1], wh[0], wh[1]
         self.figure = Polygon(self.matrix, [[x, y], [x+w, y], [x+w, y+h], [x, y+h]], self.symbol, angle, self.fixed_out)
 
+    def __repr__(self) -> str: return "nogui.SuperRectangle"
+
 
     def draw(self) -> None:
 
@@ -669,6 +680,8 @@ class Circle:
             if distance <= self.radius+1:
                 return True
         return False
+
+    def __repr__(self) -> str: return "nogui.Circle"
 
 if __name__ == "__main__":
     from test_gui import Main

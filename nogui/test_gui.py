@@ -1,5 +1,6 @@
-import __init__ as nogui
-from nogui import Vec2
+# import __init__ as nogui
+import nogui
+from nogui import Matrix, Vec2
 import tkinter
 from tkinter import filedialog
 import threading
@@ -7,6 +8,8 @@ from math import sin, cos, tan, degrees, radians
 import os
 from time import sleep
 import importlib
+import shutil
+import pygame
 
 class Thread(threading.Thread):
     def __init__(self, func) -> None:
@@ -33,15 +36,22 @@ class PropertiesWin:
         self.menu.file = tkinter.Menu(self.menu, tearoff = 0)
         self.menu.add_cascade(label = "File", menu = self.menu.file)
 
-        self.menu.file.add_command(label = "Open", command = main.open)
-        self.menu.file.add_command(label = "Save", command = main.save)
-        self.menu.file.add_command(label = "Save as", command = main.saveas)
-        self.menu.file.add_command(label = "Start/stop", command = main.menu_start_stop)
+        self.menu.file.file = tkinter.Menu(self.menu.file, tearoff = 0)
+        self.menu.file.add_cascade(label = "File", menu = self.menu.file.file)
+
+        self.menu.file.file.add_command(label = "Open", command = main.open)
+        self.menu.file.file.add_command(label = "Save", command = main.save)
+        self.menu.file.file.add_command(label = "Save as", command = main.saveas)
+        self.menu.file.file.add_checkbutton(label = "run", command = main.menu_start_stop, variable = tkinter.BooleanVar())
+        self.menu.file.file.add_command(label = "Reload", command = main.reload_files)
 
         self.menu.file.files = tkinter.Menu(self.menu.file, tearoff = 0)
         self.menu.file.add_cascade(label = "Files", menu = self.menu.file.files)
 
         self.menu.file.files.add_command(label = "New", command = main.new_pyfile)
+        
+        self.menu.file.files.delete_file = tkinter.Menu(self.menu.file.files, tearoff = 0)
+        self.menu.file.files.add_cascade(label = "Delete", menu = self.menu.file.files.delete_file)
 
         self.menu.create = tkinter.Menu(self.menu, tearoff = 0)
         self.menu.add_cascade(label = "Create", menu = self.menu.create)
@@ -50,6 +60,32 @@ class PropertiesWin:
         self.menu.create.add_command(label = "Circle", command = lambda: main.create_object("Circle"))
         self.menu.create.add_command(label = "Super-rectangle", command = lambda: main.create_object("SuperRectangle"))
         self.menu.create.add_command(label = "Polygon", command = lambda: main.create_object("Polygon"))
+
+        self.menu.functions = tkinter.Menu(self.menu.file, tearoff = 0)
+        self.menu.file.add_cascade(label = "build in funcs", menu = self.menu.functions)
+
+        for str_func in main.__dir__():
+            func = getattr(main, str_func)
+            if str_func[0] != "_":
+                if func.__class__ == self.create_win.__class__:
+                    if func.__code__.co_argcount <= 1:
+                        if str_func[-6:] == "thread" or str_func[-6:] == "Thread":
+                            self.menu.functions.add_command(label = func.__code__.co_name, command = func, background = "#700", activebackground = "#b00", foreground = "#ccc", activeforeground = "#000")
+                        elif "update" in str_func:
+                            self.menu.functions.add_command(label = func.__code__.co_name, command = func, background = "#070", activebackground = "#0b0", foreground = "#ccc", activeforeground = "#000")
+                        elif "object" in str_func:
+                            self.menu.functions.add_command(label = func.__code__.co_name, command = func, background = "#007", activebackground = "#00b", foreground = "#ccc", activeforeground = "#fff")
+                        else:
+                            self.menu.functions.add_command(label = func.__code__.co_name, command = func, background = "#444", activebackground = "#bbb", foreground = "#ccc", activeforeground = "#000")
+        self.menu.functions.inactive = tkinter.Menu(self.menu.functions, tearoff = 0)
+        self.menu.functions.add_cascade(label = "Inactive", menu = self.menu.functions.inactive)
+
+        for str_func in main.__dir__():
+            func = getattr(main, str_func)
+            if str_func[0] != "_":
+                if func.__class__ == self.create_win.__class__:
+                    if func.__code__.co_argcount > 1:
+                        self.menu.functions.inactive.add_command(label = func.__code__.co_name, command = func, background = "#444", activebackground = "#888", state = tkinter.DISABLED)
 
 
         self.win.config(menu = self.menu)
@@ -69,14 +105,18 @@ class PropertiesWin:
         self.objectlist_widget.bind("<Button-3>", main.obj_menu)
 
         self.objectlist_widget.menu = tkinter.Menu(self.win, tearoff = 0)
-
+        
         self.objectlist_widget.menu.add_command(label = "Delete", command = main.delete_object)
         self.objectlist_widget.menu.add_command(label = "Move up", command = lambda: main.move_obj("up"))
         self.objectlist_widget.menu.add_command(label = "Move down", command = lambda: main.move_obj("down"))
         self.objectlist_widget.menu.add_command(label = "Update", command = main.update_objlist_widget)
 
         self.win.bind("<Button-1>", lambda coords: self.objectlist_widget.menu.unpost())
-
+        self.win.bind("<Alt-r>", lambda something: main.reload_files())
+        self.win.bind("<Alt-e>", lambda something: main.menu_start_stop())
+        self.win.bind("<Control-s>", lambda something: main.save())
+        self.win.bind("<Control-Shift-s>", lambda something: main.saveas())
+        self.win.bind("<Control-o>", lambda something: main.open())
 
 class Main:
     first_window = tkinter.Tk()
@@ -132,8 +172,9 @@ class Main:
         self.first_window.bg_symbol_input.grid(row = 2, column = 2)
         self.first_window.create_button.grid(row = 3, column = 1, columnspan = 2)
         self.first_window.create_button.bind("<Button-1>", lambda coords: self.start())
+        if "files" in os.listdir("."): shutil.rmtree("files")
+        os.mkdir("files")
         while not self.first_window.is_broken: self.first_window.update()
-        # nogui.clear_console()
 
 
     def start(self) -> None:
@@ -143,12 +184,11 @@ class Main:
         self.first_window.destroy()
         self.first_window.is_broken = True
         
-        self.matrix = nogui.Matrix(self.win_size, self.win_bg)
+        self.matrix = nogui.Matrix(self.win_size, self.win_bg, 30, 1)
 
         Thread(self.properties_thread).start()
-        Thread(self.debugConsoleTread).start()
-        Thread(self.filesTread).start()
-
+        Thread(self.debugConsoleThread).start()
+        Thread(self.filesThread).start()
         while 1: self.canvasThread()
 
 
@@ -172,15 +212,11 @@ class Main:
     def update_objlist_widget(self) -> None:
         self.properties_win.objectlist_widget.delete(0, tkinter.END)
         for i in range(len(self.objectlist)):
-            if self.objectlist[i].__class__ == nogui.RectangleXYWH:
-                self.properties_win.objectlist_widget.insert(tkinter.END, f"Rectangle {i}")
-            elif self.objectlist[i].__class__ == nogui.Circle:
-                self.properties_win.objectlist_widget.insert(tkinter.END, f"Circle {i}")
-            elif self.objectlist[i].__class__ == nogui.RectangleFULL:
-                self.properties_win.objectlist_widget.insert(tkinter.END, f"Super-rect {i}")
-            elif self.objectlist[i].__class__ == nogui.Polygon:
-                self.properties_win.objectlist_widget.insert(tkinter.END, f"Polygon {i}")
-            else: self.properties_win.objectlist_widget.insert(tkinter.END, f"Undefined object {i}")
+
+            if self.objectlist[i].__repr__()[0] != "<" or self.objectlist[i].__repr__()[-1] != ">":
+                self.properties_win.objectlist_widget.insert(tkinter.END, f"{self.objectlist[i].__repr__()} {i}")
+            else:
+                self.properties_win.objectlist_widget.insert(tkinter.END, f"Undefined object {i}")
 
 
     def update_properties_widget(self, attrs) -> None:
@@ -307,6 +343,8 @@ class Main:
             output["objlist"][obj_type] = obj.attr
 
         output["files"] = self.filedir["files"]
+        output["win_size"] = self.win_size
+        output["win_bg"] = self.win_bg
 
 
         if file == None:
@@ -330,6 +368,11 @@ class Main:
         file.close()
         inp = eval(inp)
 
+        if "win_size" in inp: self.win_size = inp["win_size"]
+        if "win_bg" in inp: self.win_bg = inp["win_bg"]
+
+        self.matrix = Matrix(self.win_size, self.win_bg, 30, True)
+
         for filename in inp["files"]:
             fileinp = inp["files"][filename]
             self.new_pyfile(fileinp)
@@ -349,14 +392,18 @@ class Main:
                 ...
 
             for attr in inp["objlist"][obj]:
-                self.objectlist[-1].attr[attr] = inp["objlist"][obj][attr]
+                try: self.objectlist[-1].attr[attr] = inp["objlist"][obj][attr]
+                except: pass
 
 
     def new_pyfile(self, insert = "") -> None:
+
+        if self.filelibs == []:
+            self.properties_win.menu.file.files.add_separator()
+
         direct = self.filedir["name"]
         if direct not in os.listdir("files"):
             os.mkdir("files/"+direct)
-            self.properties_win.menu.file.files.add_separator()
         
 
         dirlist = os.listdir("files/"+direct)
@@ -368,6 +415,7 @@ class Main:
             file.write(insert)
 
         self.properties_win.menu.file.files.add_command(label = filename, command = lambda: self.open_file(filename))
+        self.properties_win.menu.file.files.delete_file.add_command(label = filename, command = lambda: self.delete_file(filename))
         self.filedir["files"][filename] = ""
 
         file = importlib.__import__(f"files.{self.filedir['name']}.{filename}")
@@ -388,26 +436,43 @@ class Main:
         print(">>>", end = "")
 
 
+    def reboot_file_thread(self) -> None: Thread(self.filesThread).start()
+
+
+    def reload_files(self) -> None: self.tick = 0
+
+
+    def delete_file(self, name):
+        self.filelibs.pop(int(name.split("-")[1]))
+        self.properties_win.menu.file.files.delete(name)
+        self.properties_win.menu.file.files.delete_file.delete(name)
+        os.remove(f"files/{self.filedir['name']}/{name}.py")
+        self.filedir["files"].pop(name)
+        if self.filelibs == []:
+            self.properties_win.menu.file.files.delete(tkinter.END)
+        
+
+
 
 
 
     def properties_thread(self) -> None:
         self.properties_win.create_win(self)
         while 1:
-            self.properties_win.win.update()
             if self.curselected_index == None: selected_obj = None
             else:
-                selected_obj = self.objectlist[self.curselected_index]
-            
-                for propertyinp in self.properties_win.objectlist_input_list:
-                    property_str = propertyinp.get()
-                    try: property = eval(propertyinp.get())
-                    except: property = propertyinp.get()
-                    index = self.properties_win.objectlist_input_list.index(propertyinp)
-                    try:
-                        setattr(selected_obj, self.get_attrs_from_obj(selected_obj)[1][index], property)
-                        selected_obj.attr[self.attrList[index]] = property_str
-                    except: ...
+                if len(self.objectlist) > self.curselected_index:
+                    selected_obj = self.objectlist[self.curselected_index]
+        
+                    for propertyinp in self.properties_win.objectlist_input_list:
+                        property_str = propertyinp.get()
+                        try: property = eval(propertyinp.get())
+                        except: property = propertyinp.get()
+                        index = self.properties_win.objectlist_input_list.index(propertyinp)
+                        try:
+                            setattr(selected_obj, self.get_attrs_from_obj(selected_obj)[1][index], property)
+                            selected_obj.attr[self.attrList[index]] = property_str
+                        except: ...
 
             for obj in self.objectlist:
                 try:
@@ -417,6 +482,7 @@ class Main:
                         except: setattr(obj, attr, attrs[attr])
                 except:
                     ...
+            self.properties_win.win.update()
 
             if self.need_save:
                 file = filedialog.asksaveasfile(filetypes = (("Nogui project", "*.ngs"),("All files", "*.*")))
@@ -428,34 +494,36 @@ class Main:
                 self.need_open = False
                 self.open(file)
             if self.mainthread != None:
-                self.mainthread()
+                try: self.mainthread()
+                except: print("Mainthread error")
                 self.mainthread = None
-                
+         
 
     def canvasThread(self) -> None:
         self.matrix.fill()
-        try:
-            for obj in self.objectlist:
-                obj.draw()
-                if not hasattr(obj, "attr"):
-                    obj.attr = {}
-            self.matrix.show()
-        except: pass
 
         if self.tick == 2:
             for filename in self.filedir["files"]:
                 with open(f"files/{self.filedir['name']}/{filename}.py") as file:
                     fileinp = file.read()
                 self.filedir["files"][filename] = fileinp
-        self.update_file_tread = True
 
         if self.run:
             self.tick += 1
         else:
             self.tick = 0
+        try:
+            for obj in self.objectlist:
+                if hasattr(obj, "draw"):
+                    obj.draw()
+                if not hasattr(obj, "attr"):
+                    obj.attr = {}
+            self.matrix.show()
+        except: pass
+        self.update_file_tread = True
 
 
-    def debugConsoleTread(self) -> None:
+    def debugConsoleThread(self) -> None:
         print("Debug console initializated")
         while 1:
             inp = input(">>>")
@@ -472,7 +540,7 @@ class Main:
                         exec(inp)
 
 
-    def filesTread(self) -> None:
+    def filesThread(self) -> None:
         while 1:
         
             if self.update_file_tread:
