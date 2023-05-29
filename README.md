@@ -1,9 +1,9 @@
 # INFO
 
-Thats the game engine where you can make programs
-without gui `(Like in console)` very easy
+Thats the game engine where you can make games
+without gui `(Like in console)` very easily
 
-Was been testing on linux
+Has been tested on linux
 
 
 ## Installation
@@ -13,7 +13,7 @@ Well, you have to download this. There is no other ways, haha
 
 ## Configuring
 
-In the `/nogui/__init__.py` in the top of file you will see those lines:
+In the `/nogui/__init__.py` at the top of file you will see those lines:
 
 ```python
 
@@ -25,7 +25,7 @@ use_local_console = True
 `install_packages` is to install packages, what the engine needs
 
 `use_local_console` is to use special console for this engine
-* If `True` you need [`pygame`](https://github.com/pygame/pygame), speed of programs will be increased by the few times
+* If `True` you need [`pygame`](https://github.com/pygame/pygame), speed of programs will be increased a few times
 * If `False` you need [`keyboard`](https://github.com/boppreh/keyboard) and if you have linux you have to run files with a root `(not recommended to use)`
 
 # Using
@@ -37,15 +37,15 @@ For the start we need to import an engine:
 import nogui
 ```
 
-Then we need an object of class `Matrix`, it will be our window by the symbols and we will call it `matrix`:
+Then we need an object of class `Matrix`, it will be our window of the symbols and we will call it `matrix`:
 ```python
 from nogui import Matrix # importing the engine
 
 matrix = Matrix() # making the matrix
 ```
 
-If we will start this, nothing will happen, because we will do not show 
-our [window](#class-matrix), just create it, to show it you can write some code:
+If we start this nothing happens because we do not show 
+our [window](#class-matrix), just create it. To show it you can write the following:
 
 ```python
 from nogui import Matrix # importing the engine
@@ -54,7 +54,7 @@ matrix = Matrix() # making the matrix
 matrix.show() # showing the matrix
 ```
 
-If you have ever used [`pygame`](https://github.com/pygame/pygame), it will be easy for you
+If you have ever used [`pygame`](https://github.com/pygame/pygame), it will be easy for you.
 
 So, our console opened and closed almost at the same time if you [use local console](#Configuring). 
 We just need to put `matrix.show()` to the loop and we will get that:
@@ -96,7 +96,7 @@ rect = RectangleXYWH(matrix, [20, 10, 10, 10], "#") # making a rectangle
 tick = 0 # just a variable, that will be increasing all the time
 while 1:
     tick += 1 # increasing tick variable
-    rect.xywh[0] = tick/100 # moving a rectangle with x axe
+    rect.xywh[0] = tick/100 # moving a rectangle along x axis
     matrix.show() # showing the matrix
     matrix.fill() # filling the matrix
     rect.draw() # drawing the rectangle in it
@@ -113,7 +113,7 @@ rect = RectangleXYWH(matrix, [20, 10, 10, 10], "#") # making a rectangle
 tick = 0 # just a variable, that will be increasing all the time
 while 1:
     tick += 1 # increasing tick variable
-    rect.xywh[2] = (sin(tick/100)+1)*5 # moving a rectangle with x axe
+    rect.xywh[2] = (sin(tick/100)+1)*5 # moving a rectangle along x axis
     matrix.show() # showing the matrix
     matrix.fill() # filling the matrix
     rect.draw() # drawing the rectangle in it
